@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 
-export default function Navbar() {
+export default function Navbar({ user }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -73,8 +73,26 @@ export default function Navbar() {
             <span className={styles.cartBadge}>2</span>
           </button>
 
-          {/* CTA */}
-          <button className={styles.signInBtn}>Sign In / Sign Up</button>
+          {/* CTA or User Profile */}
+          {user ? (
+            <div className={styles.userProfile}>
+              <div className={styles.userAvatarWrapper}>
+                <Image
+                  src={user.avatar || '/user-deepak.jpg'}
+                  alt={user.name}
+                  width={34}
+                  height={34}
+                  className={styles.userAvatar}
+                />
+              </div>
+              <span className={styles.userName}>{user.name}</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          ) : (
+            <button className={styles.signInBtn}>Sign In / Sign Up</button>
+          )}
 
           {/* Hamburger */}
           <button

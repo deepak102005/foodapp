@@ -154,6 +154,44 @@
   line-height: 1;
 }
 
+/* User Profile */
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.userProfile:hover {
+  background-color: #f1f5f9;
+}
+
+.userAvatarWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userAvatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userName {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
 /* Sign In Button */
 .signInBtn {
   background: #1d7a3a;
