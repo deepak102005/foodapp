@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './OrderTracking.module.css';
 
 const sidebarNav = [
-  { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'explore', label: 'Explore', icon: 'explore' },
-  { id: 'orders', label: 'Orders', icon: 'orders', active: true },
+  { id: 'home', label: 'Home', icon: 'home', href: '/' },
+  { id: 'explore', label: 'Explore', icon: 'explore', href: '/restaurants' },
+  { id: 'orders', label: 'Orders', icon: 'orders', href: '/tractingpage' },
   { id: 'favorites', label: 'Favorites', icon: 'favorites' },
   { id: 'wallet', label: 'Wallet', icon: 'wallet' },
   { id: 'offers', label: 'Offers', icon: 'offers' },
@@ -85,6 +86,20 @@ export default function OrderTracking() {
           <nav className={styles.sideNav}>
             {sidebarNav.map((item) => {
               const isActive = activeNav === item.id;
+              if (item.href) {
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                  >
+                    <span className={styles.navIcon}>
+                      <NavIcon type={item.icon} />
+                    </span>
+                    <span className={styles.navLabel}>{item.label}</span>
+                  </Link>
+                );
+              }
               return (
                 <button
                   key={item.id}
@@ -112,9 +127,9 @@ export default function OrderTracking() {
               <h4 className={styles.promoHeading}>
                 Good Food.<br />Clear Choices.
               </h4>
-              <button className={styles.promoBtn}>
+              <Link href="/restaurants" className={styles.promoBtn}>
                 Order Now →
-              </button>
+              </Link>
             </div>
           </div>
         </aside>
@@ -123,12 +138,12 @@ export default function OrderTracking() {
         <main className={styles.mainContent}>
           {/* Header */}
           <div className={styles.orderHeader}>
-            <button className={styles.backBtn} aria-label="Go Back">
+            <Link href="/checkout" className={styles.backBtn} aria-label="Go Back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
-            </button>
+            </Link>
             <div>
               <h1 className={styles.orderTitle}>Order #CB12345</h1>
               <p className={styles.orderTime}>Placed on 3 Oct 2026, 12:30 PM</p>

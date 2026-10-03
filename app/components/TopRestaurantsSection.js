@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './TopRestaurantsSection.module.css';
 
 const allRestaurants = [
@@ -160,7 +161,7 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
           {filtered.map((restaurant) => {
             const isFav = !!favorites[restaurant.id];
             return (
-              <article key={restaurant.id} className={styles.card}>
+              <Link href="/menu" key={restaurant.id} className={styles.card}>
                 {/* Image Container */}
                 <div className={styles.imageContainer}>
                   <Image
@@ -197,7 +198,10 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
                   {/* Wishlist Button */}
                   <button
                     className={`${styles.favoriteBtn} ${isFav ? styles.favoriteActive : ''}`}
-                    onClick={(e) => toggleFavorite(restaurant.id, e)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(restaurant.id, e);
+                    }}
                     aria-label={`Save ${restaurant.name} to wishlist`}
                   >
                     <svg
@@ -266,7 +270,7 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
                     </svg>
                   </div>
                 </div>
-              </article>
+              </Link>
             );
           })}
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './MenuHeroSection.module.css';
 
 const galleryImages = [
@@ -137,13 +138,13 @@ export default function MenuHeroSection() {
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
-          <a href="#" className={styles.breadcrumbLink}>Home</a>
+          <Link href="/" className={styles.breadcrumbLink}>Home</Link>
           <span className={styles.breadcrumbSeparator}>&gt;</span>
-          <a href="/restaurants" className={styles.breadcrumbLink}>Restaurants</a>
+          <Link href="/restaurants" className={styles.breadcrumbLink}>Restaurants</Link>
           <span className={styles.breadcrumbSeparator}>&gt;</span>
-          <a href="#" className={styles.breadcrumbLink}>The Green Bowl</a>
+          <Link href="/menu" className={styles.breadcrumbLink}>The Green Bowl</Link>
           <span className={styles.breadcrumbSeparator}>&gt;</span>
-          <span className={styles.breadcrumbCurrent}>Quinoa Power Bowl</span>
+          <Link href="/inegrediantsmenu" className={styles.breadcrumbCurrent}>Quinoa Power Bowl</Link>
         </nav>
 
         {/* Main Two-Column Layout */}
@@ -152,7 +153,7 @@ export default function MenuHeroSection() {
           <div className={styles.leftColumn}>
             {/* Big Hero Image */}
             <div className={styles.heroImageCard}>
-              <div className={styles.heroImageWrapper}>
+              <Link href="/inegrediantsmenu" className={styles.heroImageWrapper}>
                 <Image
                   src={selectedImg}
                   alt="Selected dish preview"
@@ -161,15 +162,15 @@ export default function MenuHeroSection() {
                   sizes="(max-width: 768px) 100vw, 560px"
                   className={styles.heroMainImage}
                 />
-              </div>
+              </Link>
 
               {/* Floating Action Buttons */}
-              <button className={styles.backButton} aria-label="Go Back">
+              <Link href="/restaurants" className={styles.backButton} aria-label="Go Back">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12" />
                   <polyline points="12 19 5 12 12 5" />
                 </svg>
-              </button>
+              </Link>
 
               <div className={styles.topRightActions}>
                 <button
@@ -329,7 +330,7 @@ export default function MenuHeroSection() {
               {filteredMenuItems.map((item) => (
                 <div key={item.id} className={styles.menuItemCard}>
                   {/* Dish Thumbnail */}
-                  <div className={styles.itemImgWrapper}>
+                  <Link href="/inegrediantsmenu" className={styles.itemImgWrapper}>
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -337,10 +338,10 @@ export default function MenuHeroSection() {
                       height={86}
                       className={styles.itemImg}
                     />
-                  </div>
+                  </Link>
 
                   {/* Dish Info */}
-                  <div className={styles.itemContent}>
+                  <Link href="/inegrediantsmenu" className={styles.itemContent}>
                     <div className={styles.itemTitleRow}>
                       <h3 className={styles.itemName}>{item.name}</h3>
                       <span className={styles.itemPrice}>₹{item.price}</span>
@@ -362,7 +363,7 @@ export default function MenuHeroSection() {
                         );
                       })}
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Right Actions: Stepper + Add to Cart */}
                   <div className={styles.itemActions}>
@@ -384,14 +385,14 @@ export default function MenuHeroSection() {
                       </button>
                     </div>
 
-                    <button className={styles.addToCartBtn}>
+                    <Link href="/checkout" className={styles.addToCartBtn}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="9" cy="21" r="1" />
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                       </svg>
                       Add to Cart
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

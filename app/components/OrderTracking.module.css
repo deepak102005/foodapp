@@ -47,6 +47,8 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
   transition: all 0.15s ease;
   width: 100%;
   text-align: left;
@@ -114,6 +116,9 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
   align-self: flex-start;
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
@@ -150,6 +155,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  text-decoration: none;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   transition: transform 0.15s ease;
 }

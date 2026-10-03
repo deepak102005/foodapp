@@ -111,6 +111,7 @@
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  text-decoration: none;
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
@@ -645,6 +646,7 @@
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
   box-shadow: 0 4px 14px rgba(13, 56, 34, 0.22);
   transition: all 0.2s ease;
   margin-bottom: 14px;

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './HeroSection.module.css';
 
 const categories = [
@@ -143,9 +144,9 @@ export default function HeroSection() {
                 <h2 className={styles.slideTitle}>{slides[activeSlide].title}</h2>
                 <h2 className={styles.slideHighlight}>{slides[activeSlide].highlight}</h2>
                 <p className={styles.slideSubtitle}>{slides[activeSlide].subtitle}</p>
-                <button className={styles.slideCta}>
+                <Link href="/restaurants" className={styles.slideCta}>
                   {slides[activeSlide].cta} &rarr;
-                </button>
+                </Link>
               </div>
 
               {/* Food Image */}

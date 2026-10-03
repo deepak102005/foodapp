@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 
+import Link from 'next/link';
+
 export default function Navbar({ user }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -11,7 +13,7 @@ export default function Navbar({ user }) {
     <header className={styles.navbar}>
       <div className={styles.navContainer}>
         {/* Logo */}
-        <div className={styles.logo}>
+        <Link href="/" className={styles.logo}>
           <Image
             src="/logo.jpeg"
             alt="ClearBite Logo"
@@ -28,14 +30,14 @@ export default function Navbar({ user }) {
             </span>
             <span className={styles.logoTagline}>Clear choices. Better bites.</span>
           </div>
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className={styles.navLinks}>
-          <a href="#" className={`${styles.navLink} ${styles.navLinkActive}`}>Home</a>
-          <a href="#" className={styles.navLink}>Restaurants</a>
-          <a href="#" className={styles.navLink}>Offers</a>
-          <a href="#" className={styles.navLink}>About</a>
+          <Link href="/" className={`${styles.navLink} ${styles.navLinkActive}`}>Home</Link>
+          <Link href="/restaurants" className={styles.navLink}>Restaurants</Link>
+          <Link href="/checkout" className={styles.navLink}>Orders</Link>
+          <Link href="/tractingpage" className={styles.navLink}>Track Order</Link>
           <a href="#" className={styles.navLink}>Contact</a>
         </nav>
 
@@ -64,14 +66,14 @@ export default function Navbar({ user }) {
               <path d="M9 15.5s-7-4.5-7-9A4 4 0 019 4.5 4 4 0 0116 6.5c0 4.5-7 9-7 9z" stroke="#1a1a1a" strokeWidth="1.8" strokeLinejoin="round"/>
             </svg>
           </button>
-          <button className={styles.iconBtn} aria-label="Cart" style={{position:'relative'}}>
+          <Link href="/checkout" className={styles.iconBtn} aria-label="Cart" style={{position:'relative'}}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M1 1h2.5l1.8 9h8.2l2-7H4.5" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
               <circle cx="8" cy="15" r="1.2" fill="#1a1a1a"/>
               <circle cx="13" cy="15" r="1.2" fill="#1a1a1a"/>
             </svg>
             <span className={styles.cartBadge}>2</span>
-          </button>
+          </Link>
 
           {/* CTA or User Profile */}
           {user ? (
@@ -110,10 +112,10 @@ export default function Navbar({ user }) {
       {/* Mobile Menu */}
       {menuOpen && (
         <nav className={styles.mobileMenu}>
-          <a href="#" className={`${styles.mobileLink} ${styles.mobileLinkActive}`} onClick={() => setMenuOpen(false)}>Home</a>
-          <a href="#" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Explore</a>
-          <a href="#" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Offers</a>
-          <a href="#" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>About</a>
+          <Link href="/" className={`${styles.mobileLink} ${styles.mobileLinkActive}`} onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/restaurants" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Restaurants</Link>
+          <Link href="/checkout" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Cart &amp; Orders</Link>
+          <Link href="/tractingpage" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Track Order</Link>
           <a href="#" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Contact</a>
           <div className={styles.mobileDivider}></div>
           <button className={styles.mobileSignIn}>Sign In / Sign Up</button>

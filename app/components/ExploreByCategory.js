@@ -4,6 +4,8 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import styles from './ExploreByCategory.module.css';
 
+import Link from 'next/link';
+
 const cuisines = [
   { id: 'indian',      label: 'Indian',      image: '/cuisine-indian.jpg' },
   { id: 'chinese',     label: 'Chinese',     image: '/cuisine-chinese.jpg' },
@@ -38,12 +40,12 @@ export default function ExploreByCategory() {
         {/* Header row */}
         <div className={styles.header}>
           <h2 className={styles.heading}>Explore by Cuisine</h2>
-          <button className={styles.viewAll}>
+          <Link href="/restaurants" className={styles.viewAll}>
             View All
             <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
               <path d="M1 6h14M9 1l6 5-6 5" stroke="#1d7a3a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </button>
+          </Link>
         </div>
 
         {/* Scroll track */}
