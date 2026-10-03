@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './HeroSection.module.css';
 
 const categories = [
@@ -46,11 +47,28 @@ const slides = [
 ];
 
 export default function HeroSection() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSlide, setActiveSlide] = useState(0);
+  const [heroSearch, setHeroSearch] = useState('');
 
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % slides.length);
+
+  const handleHeroSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (heroSearch.trim()) {
+      router.push(`/restaurants?search=${encodeURIComponent(heroSearch.trim())}`);
+    } else {
+      router.push('/restaurants');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleHeroSubmit(e);
+    }
+  };
 
   return (
     <section className={styles.hero}>
@@ -67,7 +85,7 @@ export default function HeroSection() {
           </p>
 
           {/* Search Bar */}
-          <div className={styles.searchWrapper}>
+          <form className={styles.searchWrapper} onSubmit={handleHeroSubmit}>
             <div className={styles.searchBar}>
               <svg className={styles.searchIcon} width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <circle cx="8" cy="8" r="6.5" stroke="#888" strokeWidth="1.8"/>
@@ -77,16 +95,24 @@ export default function HeroSection() {
                 type="text"
                 placeholder="Search for dishes, restaurants..."
                 className={styles.searchInput}
+                value={heroSearch}
+                onChange={(e) => setHeroSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
                 aria-label="Search for dishes and restaurants"
               />
-              <button className={styles.filterBtn} aria-label="Filter options">
+              <button
+                type="button"
+                className={styles.filterBtn}
+                aria-label="Filter options"
+                onClick={() => router.push('/restaurants')}
+              >
                 <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
                   <path d="M1 1h16M4 7h10M7 13h4" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
                 </svg>
               </button>
             </div>
-            <button className={styles.searchBtn}>Search</button>
-          </div>
+            <button type="submit" className={styles.searchBtn}>Search</button>
+          </form>
 
           {/* Category Pills */}
           <div className={styles.categories}>

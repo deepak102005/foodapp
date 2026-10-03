@@ -1,25 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import RestaurantsHero from '@/components/RestaurantsHero';
 import TopRestaurantsSection from '@/components/TopRestaurantsSection';
 
-export default function RestaurantsPage() {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+function RestaurantsContent() {
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get('search') || searchParams.get('q') || '';
+  const urlCategory = searchParams.get('category') || 'all';
+
+  const [customCategory, setCustomCategory] = useState(null);
+  const [customSearchQuery, setCustomSearchQuery] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
 
+  const activeCategory = customCategory ?? urlCategory;
+  const searchQuery = customSearchQuery ?? urlQuery;
+
   const handleSelectCategory = (categoryId) => {
-    setActiveCategory(categoryId);
+    setCustomCategory(categoryId);
   };
 
   const handleSearchChange = (query) => {
-    setSearchQuery(query);
+    setCustomSearchQuery(query);
   };
 
   const handleSearchSubmit = (query) => {
-    setSearchQuery(query);
+    setCustomSearchQuery(query);
   };
 
   const handleSortChange = (sortOption) => {
@@ -51,3 +59,12 @@ export default function RestaurantsPage() {
     </main>
   );
 }
+
+export default function RestaurantsPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#ffffff' }} />}>
+      <RestaurantsContent />
+    </Suspense>
+  );
+}
+
