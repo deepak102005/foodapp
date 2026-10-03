@@ -1,13 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
-export default function Navbar({ user }) {
+export default function Navbar({ user: propUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const { user: authUser, logout } = useAuth();
+
+  const currentUser = authUser || propUser;
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className={styles.navbar}>
@@ -75,25 +91,96 @@ export default function Navbar({ user }) {
             <span className={styles.cartBadge}>2</span>
           </Link>
 
-          {/* CTA or User Profile */}
-          {user ? (
-            <div className={styles.userProfile}>
-              <div className={styles.userAvatarWrapper}>
-                <Image
-                  src={user.avatar || '/user-deepak.jpg'}
-                  alt={user.name}
-                  width={34}
-                  height={34}
-                  className={styles.userAvatar}
-                />
-              </div>
-              <span className={styles.userName}>{user.name}</span>
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-                <path d="M1 1l4 4 4-4" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+          {/* CTA or User Profile with Dropdown */}
+          {currentUser ? (
+            <div className={styles.profileContainer} ref={dropdownRef}>
+              <button
+                type="button"
+                className={styles.userProfile}
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                aria-label="User account menu"
+              >
+                <div className={styles.userAvatarWrapper}>
+                  <Image
+                    src={currentUser.avatar || '/user-deepak.jpg'}
+                    alt={currentUser.name || 'User'}
+                    width={34}
+                    height={34}
+                    className={styles.userAvatar}
+                  />
+                </div>
+                <span className={styles.userName}>{currentUser.name}</span>
+                <svg
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  style={{
+                    transform: dropdownOpen ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s ease',
+                  }}
+                >
+                  <path d="M1 1l4 4 4-4" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+              {dropdownOpen && (
+                <div className={styles.userDropdown}>
+                  <div className={styles.dropdownHeader}>
+                    <span className={styles.dropdownName}>{currentUser.name}</span>
+                    <span className={styles.dropdownEmail}>{currentUser.email || 'Member'}</span>
+                  </div>
+                  <div className={styles.dropdownDivider} />
+                  <Link
+                    href="/tractingpage"
+                    className={styles.dropdownItem}
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Track Active Order
+                  </Link>
+                  <Link
+                    href="/checkout"
+                    className={styles.dropdownItem}
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                    </svg>
+                    Cart &amp; Checkout
+                  </Link>
+                  <div className={styles.dropdownDivider} />
+                  <button
+                    type="button"
+                    className={styles.dropdownLogout}
+                    onClick={async () => {
+                      setDropdownOpen(false);
+                      await logout();
+                    }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16 17 21 12 16 7" />
+                      <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
-            <button className={styles.signInBtn}>Sign In / Sign Up</button>
+            <div className={styles.authActions}>
+              <Link href="/signin" className={styles.signInBtn}>
+                Sign In
+              </Link>
+              <Link href="/signup" className={styles.signUpBtn}>
+                Sign Up
+              </Link>
+            </div>
           )}
 
           {/* Hamburger */}
@@ -118,7 +205,39 @@ export default function Navbar({ user }) {
           <Link href="/tractingpage" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Track Order</Link>
           <a href="#" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Contact</a>
           <div className={styles.mobileDivider}></div>
-          <button className={styles.mobileSignIn}>Sign In / Sign Up</button>
+
+          {currentUser ? (
+            <div className={styles.mobileUserSection}>
+              <div className={styles.mobileUserInfo}>
+                <Image
+                  src={currentUser.avatar || '/user-deepak.jpg'}
+                  alt={currentUser.name}
+                  width={32}
+                  height={32}
+                  className={styles.userAvatar}
+                />
+                <span>{currentUser.name}</span>
+              </div>
+              <button
+                className={styles.mobileLogoutBtn}
+                onClick={async () => {
+                  setMenuOpen(false);
+                  await logout();
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className={styles.mobileAuthRow}>
+              <Link href="/signin" className={styles.mobileSignIn} onClick={() => setMenuOpen(false)}>
+                Sign In
+              </Link>
+              <Link href="/signup" className={styles.mobileSignUp} onClick={() => setMenuOpen(false)}>
+                Sign Up
+              </Link>
+            </div>
+          )}
         </nav>
       )}
     </header>

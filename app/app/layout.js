@@ -25,10 +25,14 @@ export const viewport = {
   initialScale: 1,
 };
 
+import { AuthProvider } from '@/context/AuthContext';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
