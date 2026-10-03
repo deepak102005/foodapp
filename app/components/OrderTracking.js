@@ -1,139 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './OrderTracking.module.css';
 
-const sidebarNav = [
-  { id: 'home', label: 'Home', icon: 'home', href: '/' },
-  { id: 'explore', label: 'Explore', icon: 'explore', href: '/restaurants' },
-  { id: 'orders', label: 'Orders', icon: 'orders', href: '/tractingpage' },
-  { id: 'favorites', label: 'Favorites', icon: 'favorites' },
-  { id: 'wallet', label: 'Wallet', icon: 'wallet' },
-  { id: 'offers', label: 'Offers', icon: 'offers' },
-  { id: 'help', label: 'Help', icon: 'help' },
-];
-
-function NavIcon({ type }) {
-  if (type === 'home') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
-    );
-  }
-  if (type === 'explore') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    );
-  }
-  if (type === 'orders') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <path d="M16 10a4 4 0 0 1-8 0" />
-      </svg>
-    );
-  }
-  if (type === 'favorites') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-      </svg>
-    );
-  }
-  if (type === 'wallet') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-        <line x1="1" y1="10" x2="23" y2="10" />
-      </svg>
-    );
-  }
-  if (type === 'offers') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-        <line x1="7" y1="7" x2="7.01" y2="7" />
-      </svg>
-    );
-  }
-  if (type === 'help') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-      </svg>
-    );
-  }
-  return null;
-}
-
 export default function OrderTracking() {
-  const [activeNav, setActiveNav] = useState('orders');
-
   return (
     <div className={styles.pageContainer}>
       <div className={styles.layoutWrapper}>
-        {/* ================= LEFT SIDEBAR ================= */}
-        <aside className={styles.sidebar}>
-          <nav className={styles.sideNav}>
-            {sidebarNav.map((item) => {
-              const isActive = activeNav === item.id;
-              if (item.href) {
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-                  >
-                    <span className={styles.navIcon}>
-                      <NavIcon type={item.icon} />
-                    </span>
-                    <span className={styles.navLabel}>{item.label}</span>
-                  </Link>
-                );
-              }
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveNav(item.id)}
-                  className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-                >
-                  <span className={styles.navIcon}>
-                    <NavIcon type={item.icon} />
-                  </span>
-                  <span className={styles.navLabel}>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Sidebar Promo Card */}
-          <div className={styles.promoCard}>
-            <Image
-              src="/sidebar-promo.jpg"
-              alt="Good Food Promo"
-              fill
-              className={styles.promoBg}
-            />
-            <div className={styles.promoContent}>
-              <h4 className={styles.promoHeading}>
-                Good Food.<br />Clear Choices.
-              </h4>
-              <Link href="/restaurants" className={styles.promoBtn}>
-                Order Now →
-              </Link>
-            </div>
-          </div>
-        </aside>
-
         {/* ================= CENTER MAIN TRACKING ================= */}
         <main className={styles.mainContent}>
           {/* Header */}
