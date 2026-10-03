@@ -82,6 +82,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .heroMainImage {
@@ -616,6 +617,261 @@
 .customizeItemBtn:hover {
   background-color: #dcfce7;
   border-color: #15803d;
+}
+
+/* ==========================================================================
+   About Tab View
+   ========================================================================== */
+
+.aboutContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: tabFadeIn 0.2s ease-out;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.aboutCard {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.02);
+}
+
+.aboutTitle {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aboutText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #475569;
+  margin: 0;
+}
+
+.aboutHighlightGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.aboutHighlightItem {
+  background: #fafcfb;
+  border: 1px solid #e8f5ec;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.aboutHighlightIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.aboutHighlightName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d3822;
+  margin: 0 0 2px 0;
+}
+
+.aboutHighlightDesc {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.aboutInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.infoLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+}
+
+.infoValue {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.exploreIngredientsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d3822;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  align-self: flex-start;
+  margin-top: 14px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.exploreIngredientsBtn:hover {
+  background: #092818;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Reviews Tab View
+   ========================================================================== */
+
+.reviewsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: tabFadeIn 0.2s ease-out;
+}
+
+.ratingsSummaryCard {
+  background: #fafcfb;
+  border: 1px solid #eef2ef;
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.ratingScoreBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-right: 20px;
+  border-right: 1px solid #e2e8f0;
+}
+
+.ratingBigNumber {
+  font-size: 40px;
+  font-weight: 800;
+  color: #0d3822;
+  line-height: 1;
+}
+
+.ratingBars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ratingBarRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ratingProgressTrack {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.ratingProgressFill {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 9999px;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reviewItemCard {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reviewItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reviewerName {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.reviewDate {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.reviewStars {
+  color: #f59e0b;
+  font-size: 13px;
+}
+
+.reviewComment {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+  margin: 0;
 }
 
 /* ==========================================================================

@@ -339,103 +339,290 @@ export default function MenuHeroSection() {
               </button>
             </div>
 
-            {/* Categories Pills */}
-            <div className={styles.categoriesTrack}>
-              {['all', 'salads', 'bowls', 'wraps', 'drinks'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`${styles.categoryPill} ${activeCategory === cat ? styles.categoryPillActive : ''}`}
-                >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </button>
-              ))}
-            </div>
+            {/* Menu Tab Content */}
+            {activeTab === 'menu' && (
+              <>
+                {/* Categories Pills */}
+                <div className={styles.categoriesTrack}>
+                  {['all', 'salads', 'bowls', 'wraps', 'drinks'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`${styles.categoryPill} ${activeCategory === cat ? styles.categoryPillActive : ''}`}
+                    >
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </button>
+                  ))}
+                </div>
 
-            {/* Menu Items List */}
-            <div className={styles.menuItemsList}>
-              {filteredMenuItems.map((item) => (
-                <div key={item.id} className={styles.menuItemCard}>
-                  {/* Dish Thumbnail */}
-                  <Link href="/inegrediantsmenu" className={styles.itemImgWrapper}>
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={86}
-                      height={86}
-                      className={styles.itemImg}
-                    />
-                  </Link>
+                {/* Menu Items List */}
+                <div className={styles.menuItemsList}>
+                  {filteredMenuItems.map((item) => (
+                    <div key={item.id} className={styles.menuItemCard}>
+                      {/* Dish Thumbnail */}
+                      <Link href="/inegrediantsmenu" className={styles.itemImgWrapper}>
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={86}
+                          height={86}
+                          className={styles.itemImg}
+                        />
+                      </Link>
 
-                  {/* Dish Info */}
-                  <Link href="/inegrediantsmenu" className={styles.itemContent}>
-                    <div className={styles.itemTitleRow}>
-                      <h3 className={styles.itemName}>{item.name}</h3>
-                      <span className={styles.itemPrice}>₹{item.price}</span>
-                    </div>
-                    <p className={styles.itemDesc}>{item.desc}</p>
+                      {/* Dish Info */}
+                      <Link href="/inegrediantsmenu" className={styles.itemContent}>
+                        <div className={styles.itemTitleRow}>
+                          <h3 className={styles.itemName}>{item.name}</h3>
+                          <span className={styles.itemPrice}>₹{item.price}</span>
+                        </div>
+                        <p className={styles.itemDesc}>{item.desc}</p>
 
-                    {/* Dietary Tags */}
-                    <div className={styles.tagsRow}>
-                      {item.tags.map((tag, i) => {
-                        const isGreen = tag.type === 'vegan' || tag.type === 'glutenFree';
-                        return (
-                          <span
-                            key={i}
-                            className={isGreen ? styles.tagGreen : styles.tagOrange}
+                        {/* Dietary Tags */}
+                        <div className={styles.tagsRow}>
+                          {item.tags.map((tag, i) => {
+                            const isGreen = tag.type === 'vegan' || tag.type === 'glutenFree';
+                            return (
+                              <span
+                                key={i}
+                                className={isGreen ? styles.tagGreen : styles.tagOrange}
+                              >
+                                <span className={styles.tagDot}>●</span>
+                                {tag.text}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </Link>
+
+                      {/* Right Actions: Stepper + Add to Cart */}
+                      <div className={styles.itemActions}>
+                        <div className={styles.stepper}>
+                          <button
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className={styles.stepperBtn}
+                            aria-label="Decrease quantity"
                           >
-                            <span className={styles.tagDot}>●</span>
-                            {tag.text}
-                          </span>
-                        );
-                      })}
+                            –
+                          </button>
+                          <span className={styles.stepperValue}>{quantities[item.id] || 1}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className={styles.stepperBtn}
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          className={styles.customizeItemBtn}
+                          onClick={() => handleOpenCustomize(item)}
+                        >
+                          ✨ Customize
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles.addToCartBtn}
+                          onClick={() => handleAddToCart(item)}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                          </svg>
+                          Add
+                        </button>
+                      </div>
                     </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* About Tab Content */}
+            {activeTab === 'about' && (
+              <div className={styles.aboutContainer}>
+                {/* Food Philosophy & Sourcing */}
+                <div className={styles.aboutCard}>
+                  <h3 className={styles.aboutTitle}>
+                    <span>🥗</span> Food Philosophy &amp; Sourcing
+                  </h3>
+                  <p className={styles.aboutText}>
+                    The Green Bowl is committed to complete ingredient transparency and nutrient-dense culinary design. Every bowl is made to order daily using certified organic grains, cold-pressed oils, and fresh greenhouse hydroponic greens harvested under 24 hours prior.
+                  </p>
+
+                  <div className={styles.aboutHighlightGrid}>
+                    <div className={styles.aboutHighlightItem}>
+                      <span className={styles.aboutHighlightIcon}>🌱</span>
+                      <div>
+                        <h4 className={styles.aboutHighlightName}>100% Certified Organic Grains</h4>
+                        <p className={styles.aboutHighlightDesc}>
+                          High-altitude Andean tri-color quinoa and organic brown basmati rice.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.aboutHighlightItem}>
+                      <span className={styles.aboutHighlightIcon}>💧</span>
+                      <div>
+                        <h4 className={styles.aboutHighlightName}>Pesticide-Free Hydroponics</h4>
+                        <p className={styles.aboutHighlightDesc}>
+                          Local vertical farm arugula, baby spinach, kale, and crisp romaine.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.aboutHighlightItem}>
+                      <span className={styles.aboutHighlightIcon}>🛡️</span>
+                      <div>
+                        <h4 className={styles.aboutHighlightName}>Zero Artificial Additives</h4>
+                        <p className={styles.aboutHighlightDesc}>
+                          Zero refined white sugars, artificial preservatives, or chemical MSG.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.aboutHighlightItem}>
+                      <span className={styles.aboutHighlightIcon}>✨</span>
+                      <div>
+                        <h4 className={styles.aboutHighlightName}>Allergen-Isolated Kitchen</h4>
+                        <p className={styles.aboutHighlightDesc}>
+                          Dedicated prep counters for gluten-free and allergen-sensitive meals.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link href="/inegrediantsmenu" className={styles.exploreIngredientsBtn}>
+                    <span>Explore Full Ingredient Breakdown &amp; Nutrition →</span>
                   </Link>
+                </div>
 
-                  {/* Right Actions: Stepper + Add to Cart */}
-                  <div className={styles.itemActions}>
-                    <div className={styles.stepper}>
-                      <button
-                        onClick={() => updateQuantity(item.id, -1)}
-                        className={styles.stepperBtn}
-                        aria-label="Decrease quantity"
-                      >
-                        –
-                      </button>
-                      <span className={styles.stepperValue}>{quantities[item.id] || 1}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, 1)}
-                        className={styles.stepperBtn}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
+                {/* Operations & Hygiene */}
+                <div className={styles.aboutCard}>
+                  <h3 className={styles.aboutTitle}>
+                    <span>📍</span> Restaurant &amp; Operations Details
+                  </h3>
+                  <div className={styles.aboutInfoGrid}>
+                    <div className={styles.infoBlock}>
+                      <span className={styles.infoLabel}>Location</span>
+                      <span className={styles.infoValue}>Road No. 12, Banjara Hills, Hyderabad</span>
                     </div>
-
-                    <button
-                      type="button"
-                      className={styles.customizeItemBtn}
-                      onClick={() => handleOpenCustomize(item)}
-                    >
-                      ✨ Customize
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles.addToCartBtn}
-                      onClick={() => handleAddToCart(item)}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                      </svg>
-                      Add
-                    </button>
+                    <div className={styles.infoBlock}>
+                      <span className={styles.infoLabel}>Operating Hours</span>
+                      <span className={styles.infoValue}>10:00 AM – 11:00 PM (Daily)</span>
+                    </div>
+                    <div className={styles.infoBlock}>
+                      <span className={styles.infoLabel}>FSSAI License</span>
+                      <span className={styles.infoValue}>#13624014000392 (Grade A+)</span>
+                    </div>
+                    <div className={styles.infoBlock}>
+                      <span className={styles.infoLabel}>Kitchen Support</span>
+                      <span className={styles.infoValue}>+91 40 4852 9012</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {/* Reviews Tab Content */}
+            {activeTab === 'reviews' && (
+              <div className={styles.reviewsContainer}>
+                {/* Rating Summary */}
+                <div className={styles.ratingsSummaryCard}>
+                  <div className={styles.ratingScoreBlock}>
+                    <span className={styles.ratingBigNumber}>4.8</span>
+                    <span style={{ color: '#f59e0b', fontSize: '16px' }}>★★★★★</span>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>2,450 ratings</span>
+                  </div>
+
+                  <div className={styles.ratingBars}>
+                    <div className={styles.ratingBarRow}>
+                      <span>5 ★</span>
+                      <div className={styles.ratingProgressTrack}>
+                        <div className={styles.ratingProgressFill} style={{ width: '84%' }} />
+                      </div>
+                      <span>84%</span>
+                    </div>
+                    <div className={styles.ratingBarRow}>
+                      <span>4 ★</span>
+                      <div className={styles.ratingProgressTrack}>
+                        <div className={styles.ratingProgressFill} style={{ width: '12%' }} />
+                      </div>
+                      <span>12%</span>
+                    </div>
+                    <div className={styles.ratingBarRow}>
+                      <span>3 ★</span>
+                      <div className={styles.ratingProgressTrack}>
+                        <div className={styles.ratingProgressFill} style={{ width: '3%' }} />
+                      </div>
+                      <span>3%</span>
+                    </div>
+                    <div className={styles.ratingBarRow}>
+                      <span>2 ★</span>
+                      <div className={styles.ratingProgressTrack}>
+                        <div className={styles.ratingProgressFill} style={{ width: '1%' }} />
+                      </div>
+                      <span>1%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reviews List */}
+                <div className={styles.reviewsList}>
+                  <div className={styles.reviewItemCard}>
+                    <div className={styles.reviewItemHeader}>
+                      <div className={styles.reviewerInfo}>
+                        <div className={styles.reviewerAvatar}>PK</div>
+                        <div>
+                          <span className={styles.reviewerName}>Pooja Kapoor</span>
+                          <div className={styles.reviewDate}>Reviewed 2 days ago • Verified Buyer</div>
+                        </div>
+                      </div>
+                      <span className={styles.reviewStars}>★★★★★</span>
+                    </div>
+                    <p className={styles.reviewComment}>
+                      The Quinoa Power Bowl is hands down the freshest and cleanest bowl in Hyderabad. Dressing on the side was crisp and the avocado was perfectly ripe!
+                    </p>
+                  </div>
+
+                  <div className={styles.reviewItemCard}>
+                    <div className={styles.reviewItemHeader}>
+                      <div className={styles.reviewerInfo}>
+                        <div className={styles.reviewerAvatar}>AR</div>
+                        <div>
+                          <span className={styles.reviewerName}>Ananya Reddy</span>
+                          <div className={styles.reviewDate}>Reviewed 5 days ago • Verified Buyer</div>
+                        </div>
+                      </div>
+                      <span className={styles.reviewStars}>★★★★★</span>
+                    </div>
+                    <p className={styles.reviewComment}>
+                      Having real-time allergen indicators and calorie counts gives me so much peace of mind. Customizing the protein was super smooth!
+                    </p>
+                  </div>
+
+                  <div className={styles.reviewItemCard}>
+                    <div className={styles.reviewItemHeader}>
+                      <div className={styles.reviewerInfo}>
+                        <div className={styles.reviewerAvatar}>VK</div>
+                        <div>
+                          <span className={styles.reviewerName}>Vikram Kumar</span>
+                          <div className={styles.reviewDate}>Reviewed 1 week ago • Verified Buyer</div>
+                        </div>
+                      </div>
+                      <span className={styles.reviewStars}>★★★★★</span>
+                    </div>
+                    <p className={styles.reviewComment}>
+                      Consistent quality and fast delivery. Grilled chicken was tender and juicy with zero greasy feeling afterwards.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
