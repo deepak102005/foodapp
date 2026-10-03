@@ -1,0 +1,723 @@
+/* ==========================================================================
+   Checkout Page Styles
+   ========================================================================== */
+
+.section {
+  width: 100%;
+  background-color: #fafdfa;
+  background: linear-gradient(135deg, #f7fcf8 0%, #edf7f0 40%, #f9fdfa 100%);
+  min-height: calc(100vh - 70px);
+  padding: 16px 0 60px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background floating decorative leaves */
+.decorLeafTopRight {
+  position: absolute;
+  top: -10px;
+  right: -25px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+  transform: rotate(-35deg);
+}
+
+.decorLeafBottomLeft {
+  position: absolute;
+  bottom: 0;
+  left: -20px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.leafImg {
+  width: auto;
+  height: 120px;
+  object-fit: contain;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.breadcrumbLink {
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.breadcrumbLink:hover {
+  color: #0d3822;
+}
+
+.breadcrumbSep {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.breadcrumbCurrent {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+/* Layout Grid */
+.checkoutLayout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ==========================================================================
+   Left Column
+   ========================================================================== */
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Cart Header */
+.cartHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.backBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.backBtn:hover {
+  transform: scale(1.08);
+  background-color: #f8fafc;
+}
+
+.cartTitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cartSubtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* Cart Box */
+.cartBox {
+  background: #ffffff;
+  border: 1px solid #edf2ee;
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.emptyCart {
+  padding: 30px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Cart Item */
+.cartItem {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.itemImgWrapper {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #f8fafc;
+  flex-shrink: 0;
+}
+
+.itemImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.itemPrice {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.itemDesc {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 4px 0 6px 0;
+  line-height: 1.35;
+}
+
+.tagsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.itemTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #ecfdf5;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Item Action controls: Stepper + Trash */
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  height: 34px;
+}
+
+.stepperBtn {
+  background: transparent;
+  border: none;
+  padding: 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.stepperBtn:hover {
+  background-color: #f1f5f9;
+}
+
+.stepperQty {
+  padding: 0 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  min-width: 20px;
+  text-align: center;
+}
+
+.trashBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.trashBtn:hover {
+  background-color: #fee2e2;
+}
+
+.trashBtn:hover svg {
+  stroke: #ef4444;
+}
+
+/* Special Instructions */
+.instructionsWrapper {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  gap: 10px;
+}
+
+.instructIcon {
+  flex-shrink: 0;
+}
+
+.instructionsInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.instructionsInput::placeholder {
+  color: #94a3b8;
+}
+
+.instructCounter {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+/* Frequently Bought Together Box */
+.frequentlyBox {
+  background: #ffffff;
+  border: 1px solid #edf2ee;
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.frequentlyHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.frequentlyTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.frequentlyGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.crossSellCard {
+  background: #ffffff;
+  border: 1px solid #edf2ee;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.crossSellCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.crossSellImgWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: #f1f5f9;
+}
+
+.crossSellImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.crossSellFooter {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.crossSellInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.crossSellName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crossSellPrice {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.crossSellAddBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #0d3822;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.crossSellAddBtn:hover {
+  background-color: #082818;
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   Right Column: Order Summary Card
+   ========================================================================== */
+
+.rightColumn {
+  position: sticky;
+  top: 90px;
+}
+
+.summaryCard {
+  background: #ffffff;
+  border: 1px solid #edf2ee;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.summaryTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Breakdown List */
+.breakdownList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+  color: #475569;
+}
+
+.breakdownRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rowVal {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Total Row */
+.totalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+  margin-bottom: 14px;
+}
+
+.totalLabel {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.totalVal {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* Savings Badge */
+.savingsBadge {
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #059669;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.tagIcon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+/* Delivering to Section */
+.deliverySection {
+  padding: 16px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sectionTitleLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sectionHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.changeBtn {
+  background: transparent;
+  border: none;
+  color: #059669;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.changeBtn:hover {
+  color: #047857;
+}
+
+.addressText {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.addressEdit {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.addressInput {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.saveAddressBtn {
+  background: #0d3822;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Payment Method Section */
+.paymentSection {
+  margin-bottom: 22px;
+}
+
+.radioList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.radioInput {
+  accent-color: #0d3822;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.radioText {
+  font-weight: 500;
+}
+
+/* Checkout CTA Button */
+.checkoutBtn {
+  width: 100%;
+  height: 50px;
+  border-radius: 9999px;
+  background-color: #0d3822;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(13, 56, 34, 0.22);
+  transition: all 0.2s ease;
+  margin-bottom: 14px;
+}
+
+.checkoutBtn:hover {
+  background-color: #082918;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(13, 56, 34, 0.3);
+}
+
+/* Trust Badge */
+.trustBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* Laptop (1024px) */
+@media (max-width: 1024px) {
+  .checkoutLayout {
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+  }
+
+  .frequentlyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet (768px) */
+@media (max-width: 768px) {
+  .checkoutLayout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .rightColumn {
+    position: static;
+  }
+
+  .cartTitle {
+    font-size: 22px;
+  }
+
+  .frequentlyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small Mobile (< 520px) */
+@media (max-width: 520px) {
+  .cartItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .itemActions {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  .frequentlyGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}

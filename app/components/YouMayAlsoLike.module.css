@@ -1,0 +1,239 @@
+/* ==========================================================================
+   You May Also Like Section Styles
+   ========================================================================== */
+
+.section {
+  width: 100%;
+  background: linear-gradient(180deg, #f7fcf8 0%, #edf7f0 50%, #f4faf6 100%);
+  padding: 32px 0 48px 0;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(13, 56, 34, 0.05);
+}
+
+/* Floating Mint Leaves */
+.decorLeafLeft {
+  position: absolute;
+  bottom: 10px;
+  left: -15px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+  animation: leafFloatLeft 7s ease-in-out infinite alternate;
+}
+
+.decorLeafRight {
+  position: absolute;
+  top: 15px;
+  right: -20px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+  transform: rotate(-45deg);
+  animation: leafFloatRight 8s ease-in-out infinite alternate;
+}
+
+@keyframes leafFloatLeft {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-8px) rotate(4deg); }
+}
+
+@keyframes leafFloatRight {
+  0% { transform: translateY(0px) rotate(-45deg); }
+  100% { transform: translateY(8px) rotate(-35deg); }
+}
+
+.leafImg,
+.leafImgRight {
+  width: auto;
+  height: 90px;
+  object-fit: contain;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0a3023;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a3023;
+  transition: all 0.2s ease;
+}
+
+.viewAll:hover {
+  color: #059669;
+}
+
+.viewAll:hover .viewAllArrow {
+  transform: translateX(4px);
+}
+
+.viewAllArrow {
+  transition: transform 0.2s ease;
+}
+
+/* 6 Items Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+
+/* Card */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #edf2ee;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(10, 48, 35, 0.08);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.05);
+}
+
+.cardFooter {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cardInfo {
+  min-width: 0;
+}
+
+.cardName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardPrice {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.addBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fe5102;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(254, 81, 2, 0.3);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.addBtn:hover {
+  background-color: #e44700;
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* Laptop (1100px) */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Tablet (768px) */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
+
+/* Small Mobile (< 480px) */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .cardFooter {
+    padding: 8px 10px;
+  }
+
+  .cardName {
+    font-size: 12px;
+  }
+
+  .cardPrice {
+    font-size: 12px;
+  }
+
+  .addBtn {
+    width: 26px;
+    height: 26px;
+  }
+}
