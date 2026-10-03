@@ -237,8 +237,8 @@ export default function Navbar({ user: propUser }) {
             <Image
               src="/clearbite-logo-isolated.png"
               alt="ClearBite"
-              width={56}
-              height={36}
+              width={53}
+              height={38}
               priority
               unoptimized
               className={styles.logoImg}
