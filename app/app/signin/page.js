@@ -56,10 +56,10 @@ export default function SignInPage() {
       <div className={styles.heroSide}>
         <Link href="/" className={styles.heroTop}>
           <Image
-            src="/clearbite-logo.svg"
+            src="/clearbite-logo-isolated.png"
             alt="ClearBite"
-            width={40}
-            height={40}
+            width={48}
+            height={30}
             className={styles.brandLogo}
           />
           <span className={styles.brandName}>

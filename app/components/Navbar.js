@@ -235,10 +235,10 @@ export default function Navbar({ user: propUser }) {
         <Link href="/" className={styles.logo} aria-label="ClearBite Home">
           <div className={styles.logoEmblem}>
             <Image
-              src="/clearbite-logo.svg"
-              alt="ClearBite Emblem"
-              width={44}
-              height={44}
+              src="/clearbite-logo-isolated.png"
+              alt="ClearBite"
+              width={56}
+              height={36}
               priority
               unoptimized
               className={styles.logoImg}

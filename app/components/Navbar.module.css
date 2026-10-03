@@ -34,21 +34,15 @@
 }
 
 .logoEmblem {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0d3822 0%, #15803d 100%);
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
   flex-shrink: 0;
-  overflow: hidden;
 }
 
 .logoImg {
-  width: 44px !important;
-  height: 44px !important;
+  width: 56px !important;
+  height: 36px !important;
   object-fit: contain;
   display: block;
 }
