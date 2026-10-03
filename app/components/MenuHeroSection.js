@@ -109,12 +109,18 @@ const initialMenuItems = [
   },
 ];
 
+import { useCart } from '@/context/CartContext';
+import { getFoodItemById } from '@/lib/foodData';
+import FoodCustomizationModal from './FoodCustomizationModal';
+
 export default function MenuHeroSection() {
+  const { addItem } = useCart();
   const [selectedImg, setSelectedImg] = useState('/quinoa-power-bowl.jpg');
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState('menu');
   const [activeCategory, setActiveCategory] = useState('all');
   const [quantities, setQuantities] = useState({ 1: 1, 2: 1, 3: 1 });
+  const [customizingItem, setCustomizingItem] = useState(null);
 
   const updateQuantity = (id, delta) => {
     setQuantities((prev) => {
@@ -122,6 +128,27 @@ export default function MenuHeroSection() {
       const next = Math.max(1, current + delta);
       return { ...prev, [id]: next };
     });
+  };
+
+  const handleAddToCart = (item) => {
+    const qty = quantities[item.id] || 1;
+    addItem({
+      id: `menu_item_${item.id}`,
+      baseId: item.id === 1 ? 'quinoa-power-bowl' : item.id === 2 ? 'grilled-chicken-salad' : 'mediterranean-bowl',
+      name: item.name,
+      price: item.price,
+      basePrice: item.price,
+      desc: item.desc,
+      image: item.image,
+      tags: item.tags?.map((t) => ({ text: t.text, isGreen: t.type === 'vegan' || t.type === 'glutenFree' })) || [],
+      quantity: qty,
+    });
+  };
+
+  const handleOpenCustomize = (menuItem) => {
+    const dishKey = menuItem.id === 1 ? 'quinoa-power-bowl' : menuItem.id === 2 ? 'grilled-chicken-salad' : 'mediterranean-bowl';
+    const detailed = getFoodItemById(dishKey);
+    setCustomizingItem(detailed);
   };
 
   const filteredMenuItems = initialMenuItems.filter((item) => {
@@ -385,14 +412,26 @@ export default function MenuHeroSection() {
                       </button>
                     </div>
 
-                    <Link href="/checkout" className={styles.addToCartBtn}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <button
+                      type="button"
+                      className={styles.customizeItemBtn}
+                      onClick={() => handleOpenCustomize(item)}
+                    >
+                      ✨ Customize
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.addToCartBtn}
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="9" cy="21" r="1" />
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                       </svg>
-                      Add to Cart
-                    </Link>
+                      Add
+                    </button>
                   </div>
                 </div>
               ))}
@@ -400,6 +439,15 @@ export default function MenuHeroSection() {
           </div>
         </div>
       </div>
+
+      {/* Live Customization Modal */}
+      {customizingItem && (
+        <FoodCustomizationModal
+          item={customizingItem}
+          isOpen={Boolean(customizingItem)}
+          onClose={() => setCustomizingItem(null)}
+        />
+      )}
     </section>
   );
 }

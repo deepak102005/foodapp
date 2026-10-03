@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { foodItems } from '@/lib/foodData';
+import { useCart } from '@/context/CartContext';
+import FoodCustomizationModal from './FoodCustomizationModal';
 import styles from './IngredientsDetail.module.css';
 
 const gallery = [
@@ -13,25 +16,96 @@ const gallery = [
   { id: 5, src: '/hero-food.jpg', alt: 'Preparation Video', isVideo: true },
 ];
 
-const ingredientsList = [
-  { id: 1, name: 'Quinoa', icon: '🥣' },
-  { id: 2, name: 'Avocado', icon: '🥑' },
-  { id: 3, name: 'Broccoli', icon: '🥦' },
-  { id: 4, name: 'Carrot', icon: '🥕' },
-  { id: 5, name: 'Cherry Tomatoes', icon: '🍅' },
-  { id: 6, name: 'Seeds', icon: '🌰' },
-  { id: 7, name: 'Mixed Greens', icon: '🥬' },
+const allergenSensitivityOptions = [
+  { id: 'sesame', label: 'Sesame' },
+  { id: 'gluten', label: 'Gluten' },
+  { id: 'dairy', label: 'Dairy / Lactose' },
+  { id: 'nuts', label: 'Tree Nuts & Peanuts' },
+  { id: 'soy', label: 'Soy' },
+  { id: 'eggs', label: 'Eggs' },
 ];
 
 export default function IngredientsDetail() {
+  const item = foodItems[0]; // Quinoa Power Bowl Live Data
+  const { addItem } = useCart();
+
   const [selectedImg, setSelectedImg] = useState('/quinoa-power-bowl.jpg');
   const [isFavorite, setIsFavorite] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [nutritionOpen, setNutritionOpen] = useState(false);
-  const [allergenOpen, setAllergenOpen] = useState(false);
+  const [nutritionOpen, setNutritionOpen] = useState(true);
+  const [allergenOpen, setAllergenOpen] = useState(true);
 
-  const pricePerItem = 249;
-  const totalPrice = pricePerItem * quantity;
+  // Live Ingredient selection
+  const [selectedIngredient, setSelectedIngredient] = useState(item.ingredients[0]);
+
+  // Interactive Allergen Safety Checker State
+  const [activeAllergies, setActiveAllergies] = useState(['sesame']);
+
+  // Food Customization Flow Modal
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const toggleAllergyFilter = (id) => {
+    setActiveAllergies((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  // Live Allergen Safety Status Evaluation
+  const getAllergenAssessment = () => {
+    if (activeAllergies.length === 0) {
+      return {
+        safe: true,
+        text: 'Select your sensitivities above to check real-time safety for this dish.',
+      };
+    }
+
+    const conflicts = [];
+    if (activeAllergies.includes('sesame')) {
+      conflicts.push('Sesame (in Lemon Tahini dressing)');
+    }
+    if (activeAllergies.includes('nuts')) {
+      // Dish has seeds, some nut-allergic patients avoid seeds
+      conflicts.push('Pumpkin & Chia Seeds (seed mix)');
+    }
+
+    if (conflicts.length > 0) {
+      return {
+        safe: false,
+        text: `Notice: This dish contains ${conflicts.join(', ')}. Use our Customizer to swap or omit them!`,
+      };
+    }
+
+    return {
+      safe: true,
+      text: `✓ 100% Safe! This dish is naturally free from your selected sensitivities.`,
+    };
+  };
+
+  const allergenStatus = getAllergenAssessment();
+  const totalPrice = item.price * quantity;
+
+  const handleQuickAddToCart = () => {
+    addItem({
+      id: item.id,
+      baseId: item.id,
+      name: item.name,
+      price: item.price,
+      basePrice: item.price,
+      desc: item.tagline,
+      image: item.image,
+      tags: [
+        { text: 'Vegan', isGreen: true },
+        { text: 'Gluten Free', isGreen: true },
+      ],
+      calories: item.nutrition.calories,
+      protein: item.nutrition.protein,
+      allergens: ['Sesame'],
+      quantity,
+    });
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+  };
 
   return (
     <section className={styles.section}>
@@ -44,7 +118,7 @@ export default function IngredientsDetail() {
               <div className={styles.imageWrapper}>
                 <Image
                   src={selectedImg}
-                  alt="Quinoa Power Bowl"
+                  alt={item.name}
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 580px"
@@ -97,90 +171,171 @@ export default function IngredientsDetail() {
                 </button>
               ))}
             </div>
+
+            {/* Interactive Allergen Safety Checker Card */}
+            <div className={styles.allergenFilterSection}>
+              <div className={styles.checkerHeader}>
+                <h4 className={styles.checkerTitle}>
+                  <span>🛡️</span> Check Your Allergies &amp; Sensitivities
+                </h4>
+              </div>
+              <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 8px 0' }}>
+                Tap your dietary restrictions to preview live safety indicators:
+              </p>
+              <div className={styles.chipsContainer}>
+                {allergenSensitivityOptions.map((chip) => {
+                  const isActive = activeAllergies.includes(chip.id);
+                  return (
+                    <button
+                      key={chip.id}
+                      type="button"
+                      className={`${styles.allergyChip} ${isActive ? styles.allergyChipActive : ''}`}
+                      onClick={() => toggleAllergyFilter(chip.id)}
+                    >
+                      {isActive ? '✓ ' : '+ '}
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Status Box */}
+              <div
+                className={`${styles.allergyStatusBox} ${
+                  allergenStatus.safe ? styles.allergyStatusSafe : styles.allergyStatusWarn
+                }`}
+              >
+                <span>{allergenStatus.safe ? '🟢' : '⚠️'}</span>
+                <span>{allergenStatus.text}</span>
+              </div>
+            </div>
           </div>
 
           {/* ================= RIGHT COLUMN ================= */}
           <div className={styles.rightCol}>
             {/* Header: Title and Price */}
             <div className={styles.titlePriceRow}>
-              <h1 className={styles.title}>Quinoa Power Bowl</h1>
-              <span className={styles.price}>₹{pricePerItem}</span>
+              <h1 className={styles.title}>{item.name}</h1>
+              <span className={styles.price}>₹{item.price}</span>
             </div>
 
-            {/* Rating */}
+            {/* Rating & Prep Time */}
             <div className={styles.ratingRow}>
               <span className={styles.star}>★</span>
-              <span className={styles.ratingScore}>4.6</span>
-              <span className={styles.reviewsCount}>(320 reviews)</span>
+              <span className={styles.ratingScore}>{item.rating}</span>
+              <span className={styles.reviewsCount}>({item.reviewsCount} reviews)</span>
+              <span style={{ margin: '0 8px', color: '#cbd5e1' }}>•</span>
+              <span style={{ color: '#059669', fontWeight: 600, fontSize: '13px' }}>⏱ {item.prepTime}</span>
             </div>
 
             {/* Description */}
-            <p className={styles.description}>
-              A nutritious bowl with quinoa, roasted vegetables, avocado, seeds and house dressing.
-            </p>
+            <p className={styles.description}>{item.description}</p>
 
-            {/* Dietary Tags */}
-            <div className={styles.tagsRow}>
-              <span className={styles.tagVegan}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 20A7 7 0 0 1 4 13c0-4.5 4.5-9 9-9 4.5 0 7 2 7 7a7 7 0 0 1-9 9z" />
-                  <path d="M12 10a4 4 0 0 0-4 4" />
-                </svg>
-                Vegan
-              </span>
-              <span className={styles.tagGluten}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v20" />
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-                Gluten Free
-              </span>
-              <span className={styles.tagFiber}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 12h20" />
-                  <path d="M20 12v8H4v-8" />
-                  <path d="M12 2a5 5 0 0 0-5 5v5h10V7a5 5 0 0 0-5-5z" />
-                </svg>
-                High Fiber
-              </span>
+            {/* Dietary Badges */}
+            <div className={styles.tagsRow} style={{ flexWrap: 'wrap' }}>
+              {item.dietaryBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  style={{
+                    backgroundColor: badge.bg,
+                    color: badge.color,
+                    padding: '4px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <span>{badge.icon}</span>
+                  {badge.label}
+                </span>
+              ))}
             </div>
 
-            {/* Ingredients Section */}
+            {/* Ingredients Information Section (Live Clickable Ingredients) */}
             <div className={styles.ingredientsSection}>
               <div className={styles.ingredientsHeader}>
-                <h3 className={styles.ingredientsTitle}>Ingredients</h3>
-                <a href="#" className={styles.viewAllIngredients}>
-                  <span>View All</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </a>
+                <h3 className={styles.ingredientsTitle}>
+                  Interactive Ingredient Breakdown
+                </h3>
+                <span style={{ fontSize: '12px', color: '#059669', fontWeight: 600 }}>
+                  Tap any ingredient for source &amp; benefits
+                </span>
               </div>
 
               {/* Circular Ingredient Items */}
               <div className={styles.ingredientsRow}>
-                {ingredientsList.map((ing) => (
-                  <div key={ing.id} className={styles.ingredientItem}>
-                    <div className={styles.ingredientCircle}>
-                      <span className={styles.ingredientEmoji}>{ing.icon}</span>
+                {item.ingredients.map((ing) => {
+                  const isSelected = selectedIngredient?.id === ing.id;
+                  return (
+                    <div key={ing.id} className={styles.ingredientItem}>
+                      <button
+                        type="button"
+                        className={styles.ingredientCircleBtn}
+                        onClick={() => setSelectedIngredient(ing)}
+                      >
+                        <div
+                          className={`${styles.ingredientCircle} ${
+                            isSelected ? styles.ingredientActive : ''
+                          }`}
+                        >
+                          <span className={styles.ingredientEmoji}>{ing.icon}</span>
+                        </div>
+                        <span className={styles.ingredientName}>{ing.name}</span>
+                      </button>
                     </div>
-                    <span className={styles.ingredientName}>{ing.name}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {/* Expanded Selected Ingredient Card */}
+              {selectedIngredient && (
+                <div className={styles.activeIngredientCard}>
+                  <div className={styles.activeIngHeader}>
+                    <h4 className={styles.activeIngTitle}>
+                      <span>{selectedIngredient.icon}</span>
+                      {selectedIngredient.name}
+                    </h4>
+                    <span className={styles.activeIngCategory}>
+                      {selectedIngredient.category}
+                    </span>
+                  </div>
+
+                  <p className={styles.activeIngBenefit}>
+                    {selectedIngredient.benefit}
+                  </p>
+
+                  <div className={styles.activeIngMeta}>
+                    <div className={styles.activeIngOrigin}>
+                      <span>📍 Origin:</span> {selectedIngredient.origin}
+                    </div>
+                    <div>
+                      ⚡ {selectedIngredient.calories} kcal • {selectedIngredient.protein}g protein
+                    </div>
+                    {selectedIngredient.certifications?.map((c, i) => (
+                      <span key={i} className={styles.certBadge}>
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Accordions */}
             <div className={styles.accordions}>
-              {/* Nutrition Information */}
+              {/* Nutrition Information Accordion */}
               <div className={styles.accordionItem}>
                 <button
                   className={styles.accordionHeader}
                   onClick={() => setNutritionOpen(!nutritionOpen)}
                   aria-expanded={nutritionOpen}
                 >
-                  <span className={styles.accordionTitle}>Nutrition Information</span>
+                  <span className={styles.accordionTitle}>
+                    Detailed Nutrition Facts ({item.nutrition.servingSize})
+                  </span>
                   <svg
                     width="14"
                     height="14"
@@ -197,19 +352,55 @@ export default function IngredientsDetail() {
                 </button>
                 {nutritionOpen && (
                   <div className={styles.accordionContent}>
-                    <p>Calories: 450 kcal • Protein: 18g • Carbs: 52g • Healthy Fats: 14g</p>
+                    {/* Macro Cards */}
+                    <div className={styles.macroBarsRow}>
+                      <div className={styles.macroCard}>
+                        <span className={styles.macroName}>Calories</span>
+                        <span className={styles.macroValue}>{item.nutrition.calories} kcal</span>
+                      </div>
+                      <div className={styles.macroCard}>
+                        <span className={styles.macroName}>Protein</span>
+                        <span className={styles.macroValue}>{item.nutrition.protein}g</span>
+                      </div>
+                      <div className={styles.macroCard}>
+                        <span className={styles.macroName}>Carbs</span>
+                        <span className={styles.macroValue}>{item.nutrition.carbs}g</span>
+                      </div>
+                      <div className={styles.macroCard}>
+                        <span className={styles.macroName}>Healthy Fats</span>
+                        <span className={styles.macroValue}>{item.nutrition.fats}g</span>
+                      </div>
+                    </div>
+
+                    <p style={{ margin: '6px 0', fontSize: '12.5px', color: '#475569' }}>
+                      Dietary Fiber: <strong>{item.nutrition.fiber}g</strong> • Sodium: <strong>{item.nutrition.sodium}mg</strong> • Natural Sugars: <strong>{item.nutrition.sugar}g</strong>
+                    </p>
+
+                    {/* Micronutrient grid */}
+                    <div className={styles.microGrid}>
+                      {item.nutrition.micronutrients.map((micro, idx) => (
+                        <div key={idx} className={styles.microItem}>
+                          <span className={styles.microName}>{micro.name}</span>
+                          <span className={styles.microVal}>
+                            {micro.value} ({micro.dv})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Allergen Information */}
+              {/* Allergen Information Accordion */}
               <div className={styles.accordionItem}>
                 <button
                   className={styles.accordionHeader}
                   onClick={() => setAllergenOpen(!allergenOpen)}
                   aria-expanded={allergenOpen}
                 >
-                  <span className={styles.accordionTitle}>Allergen Information</span>
+                  <span className={styles.accordionTitle}>
+                    Allergen Matrix &amp; Cross-Contact Policy
+                  </span>
                   <svg
                     width="14"
                     height="14"
@@ -226,13 +417,39 @@ export default function IngredientsDetail() {
                 </button>
                 {allergenOpen && (
                   <div className={styles.accordionContent}>
-                    <p>Contains: Sesame seeds. Free from Dairy, Gluten, and Peanuts.</p>
+                    <div className={styles.allergenBoxesContainer}>
+                      <div className={styles.allergenGroup}>
+                        <span className={styles.allergenGroupTitle}>⚠️ Contains Allergens</span>
+                        <div className={styles.allergenBadgesList}>
+                          {item.allergens.contains.map((c, idx) => (
+                            <span key={idx} className={styles.badgeContains}>
+                              {c.icon} {c.name} ({c.note})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className={styles.allergenGroup}>
+                        <span className={styles.allergenGroupTitle}>🛡️ 100% Free From</span>
+                        <div className={styles.allergenBadgesList}>
+                          {item.allergens.freeFrom.map((f, idx) => (
+                            <span key={idx} className={styles.badgeFreeFrom}>
+                              ✓ {f}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <p className={styles.allergenNotice}>
+                        {item.allergens.crossContactNote}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Bottom Actions: Stepper and Add to Cart */}
+            {/* Bottom Actions: Stepper, Add to Cart & Food Customization Flow */}
             <div className={styles.actionsRow}>
               {/* Quantity Stepper */}
               <div className={styles.stepper}>
@@ -253,19 +470,49 @@ export default function IngredientsDetail() {
                 </button>
               </div>
 
-              {/* Add to Cart Button */}
-              <Link href="/checkout" className={styles.addToCartBtn}>
+              {/* Add Standard Bowl to Cart */}
+              <button
+                type="button"
+                onClick={handleQuickAddToCart}
+                className={styles.addToCartBtn}
+              >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1" />
                   <circle cx="20" cy="21" r="1" />
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
-                <span>Add to Cart • ₹{totalPrice}</span>
-              </Link>
+                <span>Add • ₹{totalPrice}</span>
+              </button>
+
+              {/* Customize Flow Button */}
+              <button
+                type="button"
+                className={styles.customizeBtn}
+                onClick={() => setIsCustomizerOpen(true)}
+              >
+                <span>✨ Customize Bowl</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Live Customization Modal / Drawer */}
+      <FoodCustomizationModal
+        item={item}
+        isOpen={isCustomizerOpen}
+        onClose={() => setIsCustomizerOpen(false)}
+      />
+
+      {/* Floating Add to Cart Toast */}
+      {showToast && (
+        <div className={styles.addedToast}>
+          <span>✓ Added to cart!</span>
+          <Link href="/checkout" style={{ color: '#86efac', textDecoration: 'underline', marginLeft: '6px' }}>
+            View Cart →
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

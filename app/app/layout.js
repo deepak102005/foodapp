@@ -26,12 +26,15 @@ export const viewport = {
 };
 
 import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext';
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

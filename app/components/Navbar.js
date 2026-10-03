@@ -5,12 +5,14 @@ import Image from 'next/image';
 import styles from './Navbar.module.css';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 export default function Navbar({ user: propUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user: authUser, logout } = useAuth();
+  const { cartCount } = useCart();
 
   const currentUser = authUser || propUser;
 
@@ -88,7 +90,9 @@ export default function Navbar({ user: propUser }) {
               <circle cx="8" cy="15" r="1.2" fill="#1a1a1a"/>
               <circle cx="13" cy="15" r="1.2" fill="#1a1a1a"/>
             </svg>
-            <span className={styles.cartBadge}>2</span>
+            {cartCount > 0 && (
+              <span className={styles.cartBadge}>{cartCount}</span>
+            )}
           </Link>
 
           {/* CTA or User Profile with Dropdown */}

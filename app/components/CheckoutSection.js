@@ -5,29 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './CheckoutSection.module.css';
 
-const initialCart = [
-  {
-    id: 1,
-    name: 'Quinoa Power Bowl',
-    price: 249,
-    desc: 'Quinoa, roasted veggies, avocado, seeds.',
-    image: '/quinoa-power-bowl.jpg',
-    tags: [
-      { text: 'Vegan', isGreen: true },
-      { text: 'Gluten Free', isGreen: true },
-    ],
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: 'Fresh Lime Soda',
-    price: 89,
-    desc: 'Refreshing lime soda with a hint of mint.',
-    image: '/checkout-lime-soda.jpg',
-    tags: [],
-    quantity: 1,
-  },
-];
+import { useCart } from '@/context/CartContext';
 
 const crossSellItems = [
   { id: 101, name: 'Chocolate Brownie', price: 129, image: '/checkout-brownie.jpg' },
@@ -37,48 +15,27 @@ const crossSellItems = [
 ];
 
 export default function CheckoutSection() {
-  const [cart, setCart] = useState(initialCart);
+  const {
+    cart,
+    cartCount: totalItemCount,
+    itemTotal,
+    deliveryFee,
+    taxes,
+    grandTotal,
+    savings,
+    updateQty,
+    removeItem,
+    addItem,
+  } = useCart();
+
   const [instructions, setInstructions] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('upi');
   const [address, setAddress] = useState('Flat 203, Sri Sai Residency, Madhapur, Hyderabad - 500081');
   const [isChangingAddress, setIsChangingAddress] = useState(false);
 
-  // Cart operations
-  const updateQty = (id, delta) => {
-    setCart((prev) =>
-      prev
-        .map((item) => {
-          if (item.id === id) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter(Boolean)
-    );
-  };
-
-  const removeItem = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
   const addItemToCart = (item) => {
-    setCart((prev) => {
-      const existing = prev.find((x) => x.id === item.id);
-      if (existing) {
-        return prev.map((x) => (x.id === item.id ? { ...x, quantity: x.quantity + 1 } : x));
-      }
-      return [...prev, { ...item, desc: 'Popular add-on item', tags: [], quantity: 1 }];
-    });
+    addItem({ ...item, desc: 'Popular add-on item', tags: [] });
   };
-
-  // Calculations
-  const itemTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = cart.length > 0 ? 40 : 0;
-  const taxes = cart.length > 0 ? 32 : 0;
-  const grandTotal = itemTotal + deliveryFee + taxes;
-  const savings = 60;
-  const totalItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <section className={styles.section}>
