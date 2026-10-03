@@ -70,7 +70,12 @@ export default function ExploreByCategory() {
             onScroll={updateScrollState}
           >
             {cuisines.map((c) => (
-              <button key={c.id} className={styles.card} aria-label={`Explore ${c.label} cuisine`}>
+              <Link
+                key={c.id}
+                href={`/restaurants?category=${c.id}`}
+                className={styles.card}
+                aria-label={`Explore ${c.label} cuisine`}
+              >
                 <div className={styles.imgWrapper}>
                   <Image
                     src={c.image}
@@ -81,7 +86,7 @@ export default function ExploreByCategory() {
                   />
                 </div>
                 <span className={styles.label}>{c.label}</span>
-              </button>
+              </Link>
             ))}
           </div>
 
