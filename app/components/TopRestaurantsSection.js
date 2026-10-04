@@ -4,97 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './TopRestaurantsSection.module.css';
-
-const allRestaurants = [
-  {
-    id: 1,
-    name: 'The Green Bowl',
-    image: '/hd-restaurant-the-green-bowl.jpg',
-    rating: 4.5,
-    reviews: '2k+',
-    deliveryTime: '30–40 mins',
-    cuisines: ['Healthy', 'Vegan', 'Continental'],
-    category: 'healthy',
-    offer: 'Flat 30% OFF',
-  },
-  {
-    id: 2,
-    name: 'Spice Route',
-    image: '/hd-restaurant-spice-route.jpg',
-    rating: 4.3,
-    reviews: '1k+',
-    deliveryTime: '25–35 mins',
-    cuisines: ['Indian', 'North Indian', 'Chinese'],
-    category: 'indian',
-    offer: 'Up to 40% OFF',
-  },
-  {
-    id: 3,
-    name: 'La Pizzeria',
-    image: '/hd-restaurant-la-pizzeria.jpg',
-    rating: 4.6,
-    reviews: '3k+',
-    deliveryTime: '30–45 mins',
-    cuisines: ['Pizza', 'Italian', 'Fast Food'],
-    category: 'pizza',
-    offer: 'Flat 25% OFF',
-  },
-  {
-    id: 4,
-    name: 'Burger Hub',
-    image: '/hd-restaurant-burger-hub.jpg',
-    rating: 4.4,
-    reviews: '2k+',
-    deliveryTime: '20–30 mins',
-    cuisines: ['Burgers', 'Fast Food', 'American'],
-    category: 'burgers',
-    offer: 'Up to 35% OFF',
-  },
-  {
-    id: 5,
-    name: 'Urban Asia',
-    image: '/hd-restaurant-urban-asia.jpg',
-    rating: 4.5,
-    reviews: '1k+',
-    deliveryTime: '25–40 mins',
-    cuisines: ['Chinese', 'Thai', 'Asian'],
-    category: 'chinese',
-    offer: 'Flat 30% OFF',
-  },
-  {
-    id: 6,
-    name: 'Tandoor Tales',
-    image: '/hd-restaurant-tandoor-tales.jpg',
-    rating: 4.4,
-    reviews: '800+',
-    deliveryTime: '30–45 mins',
-    cuisines: ['Indian', 'Tandoor', 'North Indian'],
-    category: 'indian',
-    offer: 'Up to 40% OFF',
-  },
-  {
-    id: 7,
-    name: 'Healthy Bites',
-    image: '/hd-restaurant-healthy-bites.jpg',
-    rating: 4.6,
-    reviews: '1k+',
-    deliveryTime: '20–30 mins',
-    cuisines: ['Healthy', 'Salads', 'Continental'],
-    category: 'healthy',
-    offer: 'Flat 25% OFF',
-  },
-  {
-    id: 8,
-    name: 'Sweet Cravings',
-    image: '/hd-restaurant-sweet-cravings.jpg',
-    rating: 4.7,
-    reviews: '1k+',
-    deliveryTime: '15–25 mins',
-    cuisines: ['Desserts', 'Bakery', 'Cafe'],
-    category: 'desserts',
-    offer: 'Up to 30% OFF',
-  },
-];
+import { restaurants as allRestaurants } from '@/lib/foodData';
 
 export default function TopRestaurantsSection({ activeCategory = 'all', searchQuery = '', sortBy = 'relevance' }) {
   const [favorites, setFavorites] = useState({});
@@ -137,7 +47,7 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
         {/* Section Header */}
         <div className={styles.header}>
           <h2 className={styles.title}>Top Restaurants</h2>
-          <a href="#" className={styles.seeAll}>
+          <Link href="/restaurants" className={styles.seeAll}>
             <span>See All</span>
             <svg
               width="16"
@@ -153,7 +63,7 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </Link>
         </div>
 
         {/* Restaurants Grid */}
@@ -161,7 +71,7 @@ export default function TopRestaurantsSection({ activeCategory = 'all', searchQu
           {filtered.map((restaurant) => {
             const isFav = !!favorites[restaurant.id];
             return (
-              <Link href="/menu" key={restaurant.id} className={styles.card}>
+              <Link href={`/menu?restaurant=${restaurant.id}`} key={restaurant.id} className={styles.card}>
                 {/* Image Container */}
                 <div className={styles.imageContainer}>
                   <Image

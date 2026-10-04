@@ -1,48 +1,31 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { foodItems } from '@/lib/foodData';
+import { useCart } from '@/context/CartContext';
 import styles from './YouMayAlsoLike.module.css';
 
-const recommendations = [
-  {
-    id: 1,
-    name: 'Mediterranean Bowl',
-    price: 239,
-    image: '/mediterranean-bowl.jpg',
-  },
-  {
-    id: 2,
-    name: 'Chicken Protein Bowl',
-    price: 259,
-    image: '/chicken-protein-bowl.jpg',
-  },
-  {
-    id: 3,
-    name: 'Falafel Salad',
-    price: 229,
-    image: '/falafel-salad.jpg',
-  },
-  {
-    id: 4,
-    name: 'Greek Salad',
-    price: 219,
-    image: '/greek-salad.jpg',
-  },
-  {
-    id: 5,
-    name: 'Pesto Pasta',
-    price: 249,
-    image: '/pesto-pasta.jpg',
-  },
-  {
-    id: 6,
-    name: 'Mango Smoothie',
-    price: 149,
-    image: '/mango-smoothie.jpg',
-  },
-];
-
 export default function YouMayAlsoLike() {
+  const { addItem } = useCart();
+  const recommendations = foodItems.slice(0, 6);
+
+  const handleAdd = (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: `like_${item.id}`,
+      baseId: item.id,
+      name: item.name,
+      price: item.price,
+      basePrice: item.price,
+      desc: item.tagline || item.description,
+      image: item.image,
+      tags: [{ text: 'Chef Special', isGreen: true }],
+      quantity: 1,
+    });
+  };
+
   return (
     <section className={styles.section}>
       {/* Decorative Mint Leaves */}
@@ -69,7 +52,7 @@ export default function YouMayAlsoLike() {
         {/* Header */}
         <div className={styles.header}>
           <h2 className={styles.title}>You May Also Like</h2>
-          <a href="#" className={styles.viewAll}>
+          <Link href="/restaurants" className={styles.viewAll}>
             <span>View All</span>
             <svg
               width="15"
@@ -85,13 +68,18 @@ export default function YouMayAlsoLike() {
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </Link>
         </div>
 
         {/* 6 Items Horizontal Grid */}
         <div className={styles.grid}>
           {recommendations.map((item) => (
-            <article key={item.id} className={styles.card}>
+            <Link
+              key={item.id}
+              href={`/inegrediantsmenu?item=${item.id}`}
+              className={styles.card}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <div className={styles.imageWrapper}>
                 <Image
                   src={item.image}
@@ -108,14 +96,18 @@ export default function YouMayAlsoLike() {
                   <span className={styles.cardPrice}>₹{item.price}</span>
                 </div>
 
-                <button className={styles.addBtn} aria-label={`Add ${item.name} to cart`}>
+                <button
+                  className={styles.addBtn}
+                  aria-label={`Add ${item.name} to cart`}
+                  onClick={(e) => handleAdd(e, item)}
+                >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round">
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
                 </button>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </div>

@@ -1,23 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { getRestaurantById, getFoodItemsByRestaurant, getFoodItemById } from '@/lib/foodData';
+import { useCart } from '@/context/CartContext';
+import FoodCustomizationModal from './FoodCustomizationModal';
 import styles from './MenuHeroSection.module.css';
 
-const galleryImages = [
-  { id: 1, src: '/quinoa-power-bowl.jpg', alt: 'Quinoa Power Bowl Main View' },
-  { id: 2, src: '/grilled-chicken-salad.jpg', alt: 'Grilled Chicken Salad' },
-  { id: 3, src: '/dark-bowl-salad.jpg', alt: 'Dark Bowl Salad' },
-  { id: 4, src: '/mediterranean-bowl.jpg', alt: 'Mediterranean Bowl' },
-  { id: 5, src: '/hero-food.jpg', alt: 'Food Preparation Video', isVideo: true },
-];
-
-const features = [
+const defaultFeatures = [
   {
     id: 1,
     title: 'Fresh Ingredients',
-    desc: 'Made with natural, quality ingredients',
+    desc: 'Farm-sourced & pesticide-free',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 20A7 7 0 0 1 4 13c0-4.5 4.5-9 9-9 4.5 0 7 2 7 7a7 7 0 0 1-9 9z" />
@@ -28,7 +24,7 @@ const features = [
   {
     id: 2,
     title: 'Healthy Choices',
-    desc: 'Nutritious and balanced meals',
+    desc: 'Transparent macro & calorie counts',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="#ea580c" stroke="#ea580c" strokeWidth="1">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -37,8 +33,8 @@ const features = [
   },
   {
     id: 3,
-    title: 'Allergen Info',
-    desc: 'Clearly marked allergens',
+    title: 'Allergen Safe',
+    desc: 'Clearly marked allergen matrices',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="#16a34a">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -49,7 +45,7 @@ const features = [
   {
     id: 4,
     title: 'Customizable',
-    desc: 'Make it your way',
+    desc: 'Swap proteins, bases & dressings',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" />
@@ -59,8 +55,8 @@ const features = [
   },
   {
     id: 5,
-    title: 'Quick Delivery',
-    desc: '25–35 mins',
+    title: 'Express Delivery',
+    desc: 'Hot & fresh in 25–35 mins',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="#ea580c">
         <circle cx="12" cy="12" r="10" />
@@ -70,57 +66,29 @@ const features = [
   },
 ];
 
-const initialMenuItems = [
-  {
-    id: 1,
-    name: 'Quinoa Power Bowl',
-    price: 249,
-    desc: 'Quinoa, roasted veggies, avocado, seeds.',
-    image: '/quinoa-power-bowl.jpg',
-    category: 'bowls',
-    tags: [
-      { text: 'Vegan', type: 'vegan' },
-      { text: 'Gluten Free', type: 'glutenFree' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Grilled Chicken Salad',
-    price: 269,
-    desc: 'Chicken, mixed greens, cherry tomatoes, olive oil.',
-    image: '/grilled-chicken-salad.jpg',
-    category: 'salads',
-    tags: [
-      { text: 'High Protein', type: 'highProtein' },
-      { text: 'Nut Free', type: 'nutFree' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Avocado Wrap',
-    price: 199,
-    desc: 'Avocado, fresh greens, hummus, whole wheat wrap.',
-    image: '/avocado-wrap.jpg',
-    category: 'wraps',
-    tags: [
-      { text: 'Vegan', type: 'vegan' },
-      { text: 'Dairy Free', type: 'dairyFree' },
-    ],
-  },
-];
+function MenuHeroSectionInner() {
+  const searchParams = useSearchParams();
+  const restaurantParam = searchParams.get('restaurant') || searchParams.get('id') || 'the-green-bowl';
+  
+  const restaurant = getRestaurantById(restaurantParam);
+  const restaurantMenuItems = getFoodItemsByRestaurant(restaurant.id);
 
-import { useCart } from '@/context/CartContext';
-import { getFoodItemById } from '@/lib/foodData';
-import FoodCustomizationModal from './FoodCustomizationModal';
-
-export default function MenuHeroSection() {
   const { addItem } = useCart();
-  const [selectedImg, setSelectedImg] = useState('/quinoa-power-bowl.jpg');
+  const [selectedImg, setSelectedImg] = useState(
+    restaurant.galleryImages?.[0]?.src || restaurant.image || '/quinoa-power-bowl.jpg'
+  );
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState('menu');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [quantities, setQuantities] = useState({ 1: 1, 2: 1, 3: 1 });
+  const [quantities, setQuantities] = useState({});
   const [customizingItem, setCustomizingItem] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  // Sync selected image when restaurant changes
+  useEffect(() => {
+    setSelectedImg(restaurant.galleryImages?.[0]?.src || restaurant.image || '/quinoa-power-bowl.jpg');
+    setActiveCategory('all');
+  }, [restaurant]);
 
   const updateQuantity = (id, delta) => {
     setQuantities((prev) => {
@@ -133,28 +101,33 @@ export default function MenuHeroSection() {
   const handleAddToCart = (item) => {
     const qty = quantities[item.id] || 1;
     addItem({
-      id: `menu_item_${item.id}`,
-      baseId: item.id === 1 ? 'quinoa-power-bowl' : item.id === 2 ? 'grilled-chicken-salad' : 'mediterranean-bowl',
+      id: `menu_${item.id}`,
+      baseId: item.id,
       name: item.name,
       price: item.price,
       basePrice: item.price,
-      desc: item.desc,
+      desc: item.tagline || item.description,
       image: item.image,
-      tags: item.tags?.map((t) => ({ text: t.text, isGreen: t.type === 'vegan' || t.type === 'glutenFree' })) || [],
+      tags: item.dietaryBadges?.map((b) => ({ text: b.label, isGreen: true })) || [
+        { text: 'Fresh Prep', isGreen: true },
+      ],
       quantity: qty,
     });
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2400);
   };
 
   const handleOpenCustomize = (menuItem) => {
-    const dishKey = menuItem.id === 1 ? 'quinoa-power-bowl' : menuItem.id === 2 ? 'grilled-chicken-salad' : 'mediterranean-bowl';
-    const detailed = getFoodItemById(dishKey);
+    const detailed = getFoodItemById(menuItem.id) || menuItem;
     setCustomizingItem(detailed);
   };
 
-  const filteredMenuItems = initialMenuItems.filter((item) => {
+  const filteredMenuItems = restaurantMenuItems.filter((item) => {
     if (activeCategory === 'all') return true;
-    return item.category === activeCategory;
+    return item.category?.toLowerCase() === activeCategory.toLowerCase();
   });
+
+  const featuredDish = restaurantMenuItems[0] || null;
 
   return (
     <section className={styles.sectionWrapper}>
@@ -169,9 +142,15 @@ export default function MenuHeroSection() {
           <span className={styles.breadcrumbSeparator}>&gt;</span>
           <Link href="/restaurants" className={styles.breadcrumbLink}>Restaurants</Link>
           <span className={styles.breadcrumbSeparator}>&gt;</span>
-          <Link href="/menu" className={styles.breadcrumbLink}>The Green Bowl</Link>
-          <span className={styles.breadcrumbSeparator}>&gt;</span>
-          <Link href="/inegrediantsmenu" className={styles.breadcrumbCurrent}>Quinoa Power Bowl</Link>
+          <span className={styles.breadcrumbCurrent}>{restaurant.name}</span>
+          {featuredDish && (
+            <>
+              <span className={styles.breadcrumbSeparator}>&gt;</span>
+              <Link href={`/inegrediantsmenu?item=${featuredDish.id}`} className={styles.breadcrumbLink}>
+                {featuredDish.name}
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Main Two-Column Layout */}
@@ -180,10 +159,14 @@ export default function MenuHeroSection() {
           <div className={styles.leftColumn}>
             {/* Big Hero Image */}
             <div className={styles.heroImageCard}>
-              <Link href="/inegrediantsmenu" className={styles.heroImageWrapper}>
+              <Link
+                href={featuredDish ? `/inegrediantsmenu?item=${featuredDish.id}` : '#'}
+                className={styles.heroImageWrapper}
+                title="Click to explore full ingredient breakdown"
+              >
                 <Image
                   src={selectedImg}
-                  alt="Selected dish preview"
+                  alt={restaurant.name}
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 560px"
@@ -209,7 +192,17 @@ export default function MenuHeroSection() {
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                 </button>
-                <button className={styles.actionCircleBtn} aria-label="Share dish">
+                <button
+                  className={styles.actionCircleBtn}
+                  onClick={() => {
+                    if (navigator.clipboard) {
+                      navigator.clipboard.writeText(window.location.href);
+                      setShowToast(true);
+                      setTimeout(() => setShowToast(false), 2000);
+                    }
+                  }}
+                  aria-label="Share restaurant"
+                >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                     <polyline points="16 6 12 2 8 6" />
@@ -221,7 +214,7 @@ export default function MenuHeroSection() {
 
             {/* Thumbnail Gallery */}
             <div className={styles.thumbnailsRow}>
-              {galleryImages.map((img) => (
+              {(restaurant.galleryImages || []).map((img) => (
                 <button
                   key={img.id}
                   onClick={() => setSelectedImg(img.src)}
@@ -248,7 +241,7 @@ export default function MenuHeroSection() {
 
             {/* Feature Highlights Badges */}
             <div className={styles.featuresRow}>
-              {features.map((feat) => (
+              {defaultFeatures.map((feat) => (
                 <div key={feat.id} className={styles.featureCard}>
                   <div className={styles.featureIcon}>{feat.icon}</div>
                   <h4 className={styles.featureTitle}>{feat.title}</h4>
@@ -262,40 +255,26 @@ export default function MenuHeroSection() {
           <div className={styles.rightColumn}>
             {/* Title & Rating Header */}
             <div className={styles.restaurantHeader}>
-              <h1 className={styles.restaurantName}>The Green Bowl</h1>
+              <h1 className={styles.restaurantName}>{restaurant.name}</h1>
               <div className={styles.ratingBadge}>
                 <span className={styles.starIcon}>★</span>
-                <span className={styles.ratingScore}>4.5</span>
-                <span className={styles.ratingCount}>(2K+)</span>
+                <span className={styles.ratingScore}>{restaurant.rating}</span>
+                <span className={styles.ratingCount}>({restaurant.reviews})</span>
               </div>
             </div>
 
             {/* Cuisines Tagline */}
             <div className={styles.metaRow}>
-              <span className={styles.metaItem}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 20A7 7 0 0 1 4 13c0-4.5 4.5-9 9-9 4.5 0 7 2 7 7a7 7 0 0 1-9 9z" />
-                  <path d="M12 10a4 4 0 0 0-4 4" />
-                </svg>
-                Healthy
-              </span>
-              <span className={styles.metaDot}>•</span>
-              <span className={styles.metaItem}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                </svg>
-                Continental
-              </span>
-              <span className={styles.metaDot}>•</span>
-              <span className={styles.metaItem}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 12h20" />
-                  <path d="M20 12v8H4v-8" />
-                  <path d="M12 2a5 5 0 0 0-5 5v5h10V7a5 5 0 0 0-5-5z" />
-                </svg>
-                Salad
-              </span>
+              {restaurant.cuisines?.map((c, i) => (
+                <span key={i} className={styles.metaItem}>
+                  {i > 0 && <span className={styles.metaDot} style={{ marginRight: '6px' }}>•</span>}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 20A7 7 0 0 1 4 13c0-4.5 4.5-9 9-9 4.5 0 7 2 7 7a7 7 0 0 1-9 9z" />
+                    <path d="M12 10a4 4 0 0 0-4 4" />
+                  </svg>
+                  {c}
+                </span>
+              ))}
             </div>
 
             {/* Delivery Info */}
@@ -305,16 +284,23 @@ export default function MenuHeroSection() {
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                25–35 mins
+                {restaurant.deliveryTime}
               </span>
               <span className={styles.metaDot}>•</span>
-              <span className={styles.deliveryItem}>₹300 for two</span>
+              <span className={styles.deliveryItem}>{restaurant.priceForTwo}</span>
+              {restaurant.offer && (
+                <>
+                  <span className={styles.metaDot}>•</span>
+                  <span style={{ color: '#059669', fontWeight: 700, fontSize: '13px' }}>
+                    🏷️ {restaurant.offer}
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Description */}
             <p className={styles.description}>
-              A fresh and nutritious bowl packed with quinoa, grilled chicken, avocado, colorful
-              vegetables and house dressing. Perfect for a healthy and balanced meal.
+              {restaurant.description}
             </p>
 
             {/* Section Tabs */}
@@ -323,28 +309,28 @@ export default function MenuHeroSection() {
                 className={`${styles.tabBtn} ${activeTab === 'menu' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('menu')}
               >
-                Menu
+                Menu ({restaurantMenuItems.length})
               </button>
               <button
                 className={`${styles.tabBtn} ${activeTab === 'about' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('about')}
               >
-                About
+                About &amp; Sourcing
               </button>
               <button
                 className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.tabBtnActive : ''}`}
                 onClick={() => setActiveTab('reviews')}
               >
-                Reviews (2K+)
+                Reviews ({restaurant.reviews})
               </button>
             </div>
 
             {/* Menu Tab Content */}
             {activeTab === 'menu' && (
               <>
-                {/* Categories Pills */}
+                {/* Categories Track */}
                 <div className={styles.categoriesTrack}>
-                  {['all', 'salads', 'bowls', 'wraps', 'drinks'].map((cat) => (
+                  {(restaurant.menuCategories || ['all']).map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
@@ -360,7 +346,11 @@ export default function MenuHeroSection() {
                   {filteredMenuItems.map((item) => (
                     <div key={item.id} className={styles.menuItemCard}>
                       {/* Dish Thumbnail */}
-                      <Link href="/inegrediantsmenu" className={styles.itemImgWrapper}>
+                      <Link
+                        href={`/inegrediantsmenu?item=${item.id}`}
+                        className={styles.itemImgWrapper}
+                        title="View ingredients & nutrition"
+                      >
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -371,31 +361,52 @@ export default function MenuHeroSection() {
                       </Link>
 
                       {/* Dish Info */}
-                      <Link href="/inegrediantsmenu" className={styles.itemContent}>
+                      <div className={styles.itemContent}>
                         <div className={styles.itemTitleRow}>
-                          <h3 className={styles.itemName}>{item.name}</h3>
+                          <Link href={`/inegrediantsmenu?item=${item.id}`} className={styles.itemName}>
+                            {item.name}
+                          </Link>
                           <span className={styles.itemPrice}>₹{item.price}</span>
                         </div>
-                        <p className={styles.itemDesc}>{item.desc}</p>
+                        <p className={styles.itemDesc}>{item.tagline || item.description}</p>
 
                         {/* Dietary Tags */}
                         <div className={styles.tagsRow}>
-                          {item.tags.map((tag, i) => {
-                            const isGreen = tag.type === 'vegan' || tag.type === 'glutenFree';
-                            return (
-                              <span
-                                key={i}
-                                className={isGreen ? styles.tagGreen : styles.tagOrange}
-                              >
-                                <span className={styles.tagDot}>●</span>
-                                {tag.text}
-                              </span>
-                            );
-                          })}
+                          {item.dietaryBadges?.map((badge, i) => (
+                            <span
+                              key={i}
+                              style={{
+                                backgroundColor: badge.bg || '#f1f5f9',
+                                color: badge.color || '#334155',
+                                padding: '2px 8px',
+                                borderRadius: '9999px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                              }}
+                            >
+                              <span>{badge.icon || '●'}</span>
+                              {badge.label}
+                            </span>
+                          ))}
+                          <Link
+                            href={`/inegrediantsmenu?item=${item.id}`}
+                            style={{
+                              fontSize: '11px',
+                              color: '#059669',
+                              fontWeight: 700,
+                              textDecoration: 'none',
+                              marginLeft: '4px',
+                            }}
+                          >
+                            Explore Ingredients →
+                          </Link>
                         </div>
-                      </Link>
+                      </div>
 
-                      {/* Right Actions: Stepper + Add to Cart */}
+                      {/* Right Actions: Stepper + Customize + Add to Cart */}
                       <div className={styles.itemActions}>
                         <div className={styles.stepper}>
                           <button
@@ -448,29 +459,19 @@ export default function MenuHeroSection() {
                 {/* Food Philosophy & Sourcing */}
                 <div className={styles.aboutCard}>
                   <h3 className={styles.aboutTitle}>
-                    <span>🥗</span> Food Philosophy &amp; Sourcing
+                    <span>🥗</span> Kitchen Philosophy &amp; Sourcing
                   </h3>
                   <p className={styles.aboutText}>
-                    The Green Bowl is committed to complete ingredient transparency and nutrient-dense culinary design. Every bowl is made to order daily using certified organic grains, cold-pressed oils, and fresh greenhouse hydroponic greens harvested under 24 hours prior.
+                    {restaurant.about?.philosophy || restaurant.description}
                   </p>
 
                   <div className={styles.aboutHighlightGrid}>
                     <div className={styles.aboutHighlightItem}>
                       <span className={styles.aboutHighlightIcon}>🌱</span>
                       <div>
-                        <h4 className={styles.aboutHighlightName}>100% Certified Organic Grains</h4>
+                        <h4 className={styles.aboutHighlightName}>100% Traceable Sourcing</h4>
                         <p className={styles.aboutHighlightDesc}>
-                          High-altitude Andean tri-color quinoa and organic brown basmati rice.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className={styles.aboutHighlightItem}>
-                      <span className={styles.aboutHighlightIcon}>💧</span>
-                      <div>
-                        <h4 className={styles.aboutHighlightName}>Pesticide-Free Hydroponics</h4>
-                        <p className={styles.aboutHighlightDesc}>
-                          Local vertical farm arugula, baby spinach, kale, and crisp romaine.
+                          {restaurant.about?.sourcing || 'Direct farm procurement with batch testing.'}
                         </p>
                       </div>
                     </div>
@@ -478,9 +479,9 @@ export default function MenuHeroSection() {
                     <div className={styles.aboutHighlightItem}>
                       <span className={styles.aboutHighlightIcon}>🛡️</span>
                       <div>
-                        <h4 className={styles.aboutHighlightName}>Zero Artificial Additives</h4>
+                        <h4 className={styles.aboutHighlightName}>Kitchen Hygiene &amp; Safety</h4>
                         <p className={styles.aboutHighlightDesc}>
-                          Zero refined white sugars, artificial preservatives, or chemical MSG.
+                          {restaurant.about?.kitchenCert || 'FSSAI 5-Star Certified Kitchen'} (Score: {restaurant.about?.hygieneScore || '98/100'})
                         </p>
                       </div>
                     </div>
@@ -488,40 +489,53 @@ export default function MenuHeroSection() {
                     <div className={styles.aboutHighlightItem}>
                       <span className={styles.aboutHighlightIcon}>✨</span>
                       <div>
-                        <h4 className={styles.aboutHighlightName}>Allergen-Isolated Kitchen</h4>
+                        <h4 className={styles.aboutHighlightName}>Quality Certifications</h4>
                         <p className={styles.aboutHighlightDesc}>
-                          Dedicated prep counters for gluten-free and allergen-sensitive meals.
+                          {restaurant.about?.certifications?.join(' • ') || 'Non-GMO, Zero Palm Oil'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.aboutHighlightItem}>
+                      <span className={styles.aboutHighlightIcon}>⏱️</span>
+                      <div>
+                        <h4 className={styles.aboutHighlightName}>Made Fresh to Order</h4>
+                        <p className={styles.aboutHighlightDesc}>
+                          Prepared fresh in hygienic workstations with individual allergen isolation.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <Link href="/inegrediantsmenu" className={styles.exploreIngredientsBtn}>
-                    <span>Explore Full Ingredient Breakdown &amp; Nutrition →</span>
+                  <Link
+                    href={`/inegrediantsmenu?item=${featuredDish?.id || 'quinoa-power-bowl'}`}
+                    className={styles.exploreIngredientsBtn}
+                  >
+                    <span>Explore Full Ingredient Breakdown &amp; Nutrition for {featuredDish?.name || 'Signature Dish'} →</span>
                   </Link>
                 </div>
 
                 {/* Operations & Hygiene */}
                 <div className={styles.aboutCard}>
                   <h3 className={styles.aboutTitle}>
-                    <span>📍</span> Restaurant &amp; Operations Details
+                    <span>📍</span> Location &amp; Operational Details
                   </h3>
                   <div className={styles.aboutInfoGrid}>
                     <div className={styles.infoBlock}>
-                      <span className={styles.infoLabel}>Location</span>
-                      <span className={styles.infoValue}>Road No. 12, Banjara Hills, Hyderabad</span>
+                      <span className={styles.infoLabel}>Kitchen Location</span>
+                      <span className={styles.infoValue}>Madhapur / Hitech City, Hyderabad</span>
                     </div>
                     <div className={styles.infoBlock}>
                       <span className={styles.infoLabel}>Operating Hours</span>
-                      <span className={styles.infoValue}>10:00 AM – 11:00 PM (Daily)</span>
+                      <span className={styles.infoValue}>10:00 AM – 11:30 PM (Daily)</span>
                     </div>
                     <div className={styles.infoBlock}>
                       <span className={styles.infoLabel}>FSSAI License</span>
-                      <span className={styles.infoValue}>#13624014000392 (Grade A+)</span>
+                      <span className={styles.infoValue}>#13624014000{restaurant.numericId || '392'} (Grade A+)</span>
                     </div>
                     <div className={styles.infoBlock}>
                       <span className={styles.infoLabel}>Kitchen Support</span>
-                      <span className={styles.infoValue}>+91 40 4852 9012</span>
+                      <span className={styles.infoValue}>+91 40 4852 901{restaurant.numericId || '2'}</span>
                     </div>
                   </div>
                 </div>
@@ -534,25 +548,25 @@ export default function MenuHeroSection() {
                 {/* Rating Summary */}
                 <div className={styles.ratingsSummaryCard}>
                   <div className={styles.ratingScoreBlock}>
-                    <span className={styles.ratingBigNumber}>4.8</span>
+                    <span className={styles.ratingBigNumber}>{restaurant.rating}</span>
                     <span style={{ color: '#f59e0b', fontSize: '16px' }}>★★★★★</span>
-                    <span style={{ fontSize: '12px', color: '#64748b' }}>2,450 ratings</span>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>{restaurant.reviews} verified reviews</span>
                   </div>
 
                   <div className={styles.ratingBars}>
                     <div className={styles.ratingBarRow}>
                       <span>5 ★</span>
                       <div className={styles.ratingProgressTrack}>
-                        <div className={styles.ratingProgressFill} style={{ width: '84%' }} />
+                        <div className={styles.ratingProgressFill} style={{ width: '86%' }} />
                       </div>
-                      <span>84%</span>
+                      <span>86%</span>
                     </div>
                     <div className={styles.ratingBarRow}>
                       <span>4 ★</span>
                       <div className={styles.ratingProgressTrack}>
-                        <div className={styles.ratingProgressFill} style={{ width: '12%' }} />
+                        <div className={styles.ratingProgressFill} style={{ width: '10%' }} />
                       </div>
-                      <span>12%</span>
+                      <span>10%</span>
                     </div>
                     <div className={styles.ratingBarRow}>
                       <span>3 ★</span>
@@ -579,13 +593,13 @@ export default function MenuHeroSection() {
                         <div className={styles.reviewerAvatar}>PK</div>
                         <div>
                           <span className={styles.reviewerName}>Pooja Kapoor</span>
-                          <div className={styles.reviewDate}>Reviewed 2 days ago • Verified Buyer</div>
+                          <div className={styles.reviewDate}>Reviewed 2 days ago • Verified Order</div>
                         </div>
                       </div>
                       <span className={styles.reviewStars}>★★★★★</span>
                     </div>
                     <p className={styles.reviewComment}>
-                      The Quinoa Power Bowl is hands down the freshest and cleanest bowl in Hyderabad. Dressing on the side was crisp and the avocado was perfectly ripe!
+                      The {restaurantMenuItems[0]?.name || 'food'} was exceptionally fresh and flavorful! Loving the full transparency on ingredients.
                     </p>
                   </div>
 
@@ -595,13 +609,13 @@ export default function MenuHeroSection() {
                         <div className={styles.reviewerAvatar}>AR</div>
                         <div>
                           <span className={styles.reviewerName}>Ananya Reddy</span>
-                          <div className={styles.reviewDate}>Reviewed 5 days ago • Verified Buyer</div>
+                          <div className={styles.reviewDate}>Reviewed 4 days ago • Verified Order</div>
                         </div>
                       </div>
                       <span className={styles.reviewStars}>★★★★★</span>
                     </div>
                     <p className={styles.reviewComment}>
-                      Having real-time allergen indicators and calorie counts gives me so much peace of mind. Customizing the protein was super smooth!
+                      Real-time allergen check saved me so much hassle. Customizing toppings and protein was smooth and accurate.
                     </p>
                   </div>
 
@@ -611,13 +625,13 @@ export default function MenuHeroSection() {
                         <div className={styles.reviewerAvatar}>VK</div>
                         <div>
                           <span className={styles.reviewerName}>Vikram Kumar</span>
-                          <div className={styles.reviewDate}>Reviewed 1 week ago • Verified Buyer</div>
+                          <div className={styles.reviewDate}>Reviewed 1 week ago • Verified Order</div>
                         </div>
                       </div>
                       <span className={styles.reviewStars}>★★★★★</span>
                     </div>
                     <p className={styles.reviewComment}>
-                      Consistent quality and fast delivery. Grilled chicken was tender and juicy with zero greasy feeling afterwards.
+                      Prompt delivery in {restaurant.deliveryTime}. Everything arrived piping hot and neatly packaged.
                     </p>
                   </div>
                 </div>
@@ -635,6 +649,41 @@ export default function MenuHeroSection() {
           onClose={() => setCustomizingItem(null)}
         />
       )}
+
+      {/* Toast */}
+      {showToast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            backgroundColor: '#0d3822',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            zIndex: 9999,
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
+        >
+          <span>✓ Added to cart!</span>
+          <Link href="/checkout" style={{ color: '#86efac', textDecoration: 'underline' }}>
+            View Cart →
+          </Link>
+        </div>
+      )}
     </section>
+  );
+}
+
+export default function MenuHeroSection() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '600px', backgroundColor: '#ffffff' }} />}>
+      <MenuHeroSectionInner />
+    </Suspense>
   );
 }
